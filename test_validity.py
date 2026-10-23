@@ -1,4 +1,5 @@
 """Leakage guards. Run against the real built data: pytest test_validity.py"""
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -141,3 +142,23 @@ def test_v31_fixes_capital_zero_and_efficiency_ratio():
     new = build(raw, yields, none, fixed=True).set_index("CERT")
     assert old.loc[1, "tier1_rbc"] == 0 and pd.isna(new.loc[1, "tier1_rbc"]) and new.loc[2, "tier1_rbc"] == 12
     assert old.loc[1, "efficiency"] == 60 and new.loc[1, "efficiency"] == pytest.approx(0.6)
+
+
+def test_v4_trajectory_regional_and_peer_label():
+    from features_v4 import regional, run_label_v4, trajectory
+    d = pd.DataFrame({"CERT": [1, 1], "repdte": pd.to_datetime(["2020-03-31", "2021-03-31"]), "STALP": ["CA", "CA"],
+                      "leverage": [10.0, 8.0], "npl_oreo": [0.01, 0.03], "roa": [1.0, 0.5], "uninsured": [0.3, 0.4],
+                      "liquid": [0.2, 0.1], "mtm_cap": [0.08, 0.05]})
+    t = trajectory(d)
+    assert pd.isna(t.d_leverage.iloc[0]) and t.d_leverage.iloc[1] == pytest.approx(-2.0) and t.d_uninsured.iloc[1] == pytest.approx(0.1)
+    states = pd.DataFrame({"STALP": "CA", "repdte": pd.date_range("2020-03-31", periods=5, freq="QE"),
+                           "unemp": [4.0, 5, 6, 7, 8.0], "hpi": [100.0, 101, 102, 103, 110.0]})
+    g = regional(d, states)
+    assert g.state_unemp.iloc[1] == 8.0 and g.state_unemp_chg.iloc[1] == pytest.approx(4.0) and g.state_hpi_chg.iloc[1] == pytest.approx(0.10)
+    # peer label: 100 banks in one quarter, 20 per size quintile; the worst 5% of each quintile (1 bank) is the event
+    n = 100
+    lab = pd.DataFrame({"repdte": pd.Timestamp("2015-12-31"), "log_assets": np.arange(n, dtype=float), "uninsured": 0.3,
+                        "DEPUNINS_next": 1.0, "faildate": pd.NaT, "outcome_q": pd.Timestamp("2016-03-31"),
+                        "unins_chg_next": np.tile(np.linspace(-0.5, 0.5, 20), 5)})
+    ev = run_label_v4(lab)
+    assert ev.sum() == 5 and ev.groupby(np.arange(n) // 20).sum().tolist() == [1.0] * 5
