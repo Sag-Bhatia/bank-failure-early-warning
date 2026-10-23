@@ -31,9 +31,12 @@ BUCKETS = [("3LES", 0.1, "DGS3MO"), ("3T12", 0.5, "DGS1"), ("1T3", 1.8, "DGS3"),
 COVERAGE_CHANGE = ["2008-12-31", "2009-03-31", "2010-09-30", "2010-12-31", "2011-03-31", "2013-03-31"]
 
 
-def load_raw():
+def load_raw(fixed=False):
     parts = [pd.read_parquet(f) for f in sorted((V3 / "q").glob("*.parquet"))]
     raw = pd.concat(parts, ignore_index=True)
+    if fixed:
+        ieff = pd.concat([pd.read_parquet(f) for f in sorted((V3 / "ieff").glob("*.parquet"))], ignore_index=True)
+        raw = raw.merge(ieff, on=["CERT", "REPDTE"], how="left")
     raw["repdte"] = pd.to_datetime(raw.REPDTE, format="%Y%m%d")
     return raw
 
@@ -43,7 +46,8 @@ def rate_rise(yields):
     return (yields - yields.shift(8)).rename(columns=lambda c: f"dy_{c}")
 
 
-def build(raw, yields, fails):
+def build(raw, yields, fails, fixed=False):
+    """fixed=True is v3.1: the two unit bugs found after the v3 run (see PREREG_v3.md, v3.1 addendum)."""
     d = raw.copy()
     d["public_date"] = d.repdte + LAG
     dy = rate_rise(yields)
@@ -68,7 +72,8 @@ def build(raw, yields, fails):
 
     f = pd.DataFrame({
         "leverage": d.RBC1AAJ,
-        "tier1_rbc": d.IDT1RWAJR,
+        # v3.1: 0 means "not reported" (pre-1990, and community-bank-leverage-ratio electors from 2020)
+        "tier1_rbc": d.IDT1RWAJR.where(d.IDT1RWAJR > 0) if fixed else d.IDT1RWAJR,
         "eq_assets": per(d.EQ, d.ASSET),
         "mtm_cap": per(d.EQ - htm_loss - loan_loss, d.ASSET),
         "npl_oreo": per(num, d.LNLSGR),
@@ -78,7 +83,7 @@ def build(raw, yields, fails):
         "texas_reg": per_capital(num, d.RBCT1J + d.LNATRES),
         "roa": d.ROA,
         "nim": d.NIMY,
-        "efficiency": d.EEFF,
+        "efficiency": per(d.EEFF, d.IEFF) if fixed else d.EEFF,  # v3 used the dollar numerator by mistake
         "liquid": per(liquid, d.ASSET),
         "run_gap": d.DEPUNINS / liquid.clip(lower=1),
         "wholesale": per(d.OTHBOR.fillna(0) + d.FREPP.fillna(0), d.ASSET),
@@ -123,9 +128,11 @@ def dimension_scores(d):
 
 
 if __name__ == "__main__":
-    raw = load_raw()
-    out = build(raw, pd.read_parquet(V3 / "yields.parquet"), failures())
+    import sys
+    fixed = sys.argv[1:] == ["v31"]
+    raw = load_raw(fixed)
+    out = build(raw, pd.read_parquet(V3 / "yields.parquet"), failures(), fixed)
     out = pd.concat([out, dimension_scores(out)], axis=1)
-    out.to_parquet(V3 / "features.parquet")
+    out.to_parquet(V3 / ("features_v31.parquet" if fixed else "features.parquet"))
     print(len(out), "rows;", out.repdte.min().date(), "to", out.repdte.max().date())
     print("coverage by decade:\n", out.groupby(out.repdte.dt.year // 10 * 10)[FEATURES].apply(lambda x: x.notna().mean()).T.round(2))

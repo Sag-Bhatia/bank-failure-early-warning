@@ -38,8 +38,10 @@ def run_training_rows(d):
     return r[~r.outcome_q.isin(artefact)], sorted(str(q.date()) for q in artefact)
 
 
-def main():
-    d = pd.read_parquet(V3 / "features.parquet")
+def main(tag=""):
+    global MODELS
+    MODELS = ROOT / f"models_v3{tag}"
+    d = pd.read_parquet(V3 / f"features{tag}.parquet")
     run_rows, excluded = run_training_rows(d)
     sets = {
         "F_A": (d[d.repdte.between("1986-03-31", "2006-12-31")], "fail_365"),
@@ -62,9 +64,10 @@ def main():
             info[v] = hashlib.sha256(path.read_bytes()).hexdigest()
         frozen["models"][name] = info
         print(name, info["rows"], "rows,", info["positives"], "positives", info["repdte"], flush=True)
-    (ROOT / "frozen_v3.json").write_text(json.dumps(frozen, indent=2))
+    (ROOT / f"frozen_v3{tag}.json").write_text(json.dumps(frozen, indent=2))
     print("excluded run outcome quarters:", excluded)
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main("_v31" if sys.argv[1:] == ["v31"] else "")

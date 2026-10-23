@@ -13,8 +13,9 @@ from fed_borrowing import borrowing
 from features import failures
 from fetch_v3 import V3
 from lenses import lenses
-from train_v3 import MODELS, ROOT
+from train_v3 import ROOT
 
+MODELS = ROOT / "models_v3"
 V3OUT = OUT / "v3"
 B = 1000
 rng = np.random.default_rng(0)
@@ -74,9 +75,11 @@ def table(y, scores, pairs, fns):
     return out
 
 
-def main():
-    frozen = json.loads((ROOT / "frozen_v3.json").read_text())
-    d = pd.read_parquet(V3 / "features.parquet")
+def main(tag=""):
+    global MODELS, V3OUT
+    MODELS, V3OUT = ROOT / f"models_v3{tag}", OUT / f"v3{tag}"
+    frozen = json.loads((ROOT / f"frozen_v3{tag}.json").read_text())
+    d = pd.read_parquet(V3 / f"features{tag}.parquet")
     fails = failures()
     V3OUT.mkdir(parents=True, exist_ok=True)
     res = {}
@@ -174,4 +177,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main("_v31" if sys.argv[1:] == ["v31"] else "")

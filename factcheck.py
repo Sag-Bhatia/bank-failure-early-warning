@@ -11,12 +11,11 @@ SKIP = re.compile(r"Bank \d+|T-\d|^\s*\d+\.\s", re.M)  # labels, quarter tags, l
 def candidates(payload):
     out = []
     for q in payload:
-        out.append(q["risk_rank_pct"])
-        for k in ("credit_lens", "run_lens", "mtm_cap", "run_gap"):
+        for k in ("risk_rank_pct", "failure_model", "credit_lens", "run_lens", "mtm_cap", "run_gap", "size_percentile"):
             if q.get(k) is not None:
                 out += [q[k], q[k] * 100]
-        for section in ("values", "peer_percentile", "score_contribution"):
-            for v in q[section].values():
+        for section in ("values", "ratios", "peer_percentile", "score_contribution", "dimensions"):
+            for v in q.get(section, {}).values():
                 if v is not None:
                     out += [v, v * 100]  # fractions are usually quoted as percentages
     return out

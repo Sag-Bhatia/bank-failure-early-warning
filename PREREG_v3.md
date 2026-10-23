@@ -143,3 +143,19 @@ E2 is descriptive. Every result is reported, including failed hypotheses.
 - **Some features don't exist in older data:** large business operating accounts (TRNNIA) start in 2011, and maturity buckets in 1997. Older training rows lack them.
 - **Fed borrowing in spring 2023 mixes distress with precaution.** Some healthy banks tested the facility. The 1%-of-assets threshold is meant to filter tests out.
 - **Fraud and governance failures are invisible to call-report data.**
+
+---
+
+## Addendum: v3.1 bug-fix run (written AFTER the v3 results, before any v3.1 result)
+Two unit errors in the feature definitions above were found *after* the v3 results were committed (`a12a34c`). They were found while building analyst payloads and then checking every feature's range.
+1. **`efficiency` used EEFF**, which is the dollar numerator of the efficiency ratio, so the feature was effectively bank size.
+   - Corrected to EEFF / IEFF.
+   - Requires one extra field (IEFF), fetched for every quarter.
+2. **`tier1_rbc` reads 0 when not reported.** That covers every bank before 1990 (risk-based capital did not exist yet) and about 37% of banks from 2020 (community-bank-leverage-ratio electors). Under its "−" constraint, the model treated those banks as having zero capital.
+   - Corrected: 0 → missing.
+
+**v3.1 changes nothing else.**
+- The same features, constraints, hyperparameters, training windows, tests, metrics and hypotheses.
+- Separate models (`models_v3_v31/`), frozen file (`frozen_v3_v31.json`) and results (`out/v3_v31/`).
+
+Both v3 (as preregistered) and v3.1 are reported. Because the bugs were found after seeing v3 results, v3.1 is labelled **corrected after the fact**. Readers should weigh it accordingly.

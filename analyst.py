@@ -10,81 +10,80 @@ import sys
 
 import pandas as pd
 
-from backtest import MODELS, NAMED, OUT, ROOT, load_frozen
-from features import failures
+from backtest import OUT
+from features_v3 import DIMENSIONS, FEATURES
 from fetch import DATA
 from lenses import history
 
-SYSTEM = """You are a bank supervisory analyst. You receive only computed call-report data for one anonymized bank, over three quarters:
-- two zero-parameter screens, as percentiles among all banks that quarter (1.0 = most fragile):
-  credit_lens (Texas ratio: problem assets vs capital and reserves) and
-  run_lens (average of: capital after unrealized securities losses, mtm_cap; and uninsured deposits per dollar of unencumbered liquid assets, run_gap);
-- a learned logistic model's overall risk rank (risk_rank_pct, 1 = riskiest 1%) and each factor's contribution to it;
-- the underlying ratios and their peer percentiles.
-Write a memo of at most 250 words: which kind of risk (credit, run, both or neither) dominates and why, how it changed over the quarters,
-where the screens and the learned model disagree, and 2-3 questions a supervisor should ask next.
-If inputs look missing, zero or implausible, say the screen is unreliable for this bank rather than interpreting it.
+SYSTEM = """You are a bank supervisory analyst. You receive only computed call-report data for one anonymized bank, over three quarters.
+All percentiles are among all US banks that quarter, from 0 to 1, where 1.0 = most fragile:
+- failure_model: a gradient-boosted model of failure within a year, trained on 1986-2018 failures with theory-enforced directions;
+- run_lens: average of capital after unrealized securities losses and uninsured deposits per dollar of unencumbered liquid assets;
+- credit_lens: the Texas ratio (problem assets vs capital and reserves);
+- dimensions: seven sub-scores (capital, asset quality, earnings, liquidity, rate sensitivity, depositors, growth and concentration);
+- ratios: the underlying values and their peer percentiles (peer_percentile is the share of banks with a lower value, 0-100).
+Write a memo of at most 250 words: which risks dominate and why, how they changed over the quarters, where the failure model and the
+run lens disagree (the failure model was trained mostly on credit-driven failures), and 2-3 questions a supervisor should ask next.
+If inputs look missing, zero or implausible, say so rather than interpreting them.
 Use only the numbers given. Do not guess or mention the bank's identity, location, the calendar period, or any real-world events or institutions."""
 
 MEMOS = OUT / "memos"
 KEY = DATA / "memo_key.json"
-
-
-def payload(rows, peers, model, cols):
-    z = model[:-1].transform(rows[cols])
-    contrib = pd.DataFrame(z * model[-1].coef_[0], columns=cols, index=rows.index)
-    quarters = []
-    for k, (i, r) in enumerate(rows.iloc[::-1].iterrows()):
-        pct = {c: round(float((peers.loc[peers.repdte == r.repdte, c] < r[c]).mean() * 100), 1) for c in cols}
-        quarters.append({"quarter": f"T-{k}" if k else "T", "risk_rank_pct": round(r.pct_logit_B * 100, 2),
-                         "credit_lens": round(r.credit, 3), "run_lens": round(r.run, 3),
-                         "mtm_cap": round(r.mtm_cap, 4), "run_gap": round(r.run_gap, 3),
-                         # exact size would let the LLM recognise a large bank; percentile only for log_assets
-                         "values": {c: None if pd.isna(r[c]) else round(float(r[c]), 4) for c in cols if c != "log_assets"},
-                         "peer_percentile": pct, "score_contribution": contrib.loc[i].round(3).to_dict()})
-    return quarters
+NAMED = [24735, 57053, 59017, 27332]
+RATIOS = [c for c in FEATURES if c not in ("log_assets", "big_operating")]
 
 
 def scored():
-    feats = pd.read_parquet(DATA / "features.parquet")
-    peers = feats[feats.split == "test"]
-    d = peers.merge(pd.read_parquet(OUT / "scores.parquet")[["CERT", "repdte", "pct_logit_B"]], on=["CERT", "repdte"])
-    return peers, d.merge(history()[["CERT", "repdte", "credit", "run", "mtm_cap", "run_gap"]], on=["CERT", "repdte"])
+    """2019-2024 bank-quarters with the frozen F_B score, both v2 lenses and the seven dimensions."""
+    d = pd.read_parquet(OUT / "v3" / "e2.parquet")
+    d["failure_model"] = d.groupby("repdte").F_B_mono.rank(pct=True)
+    lz = history()[["CERT", "repdte", "credit", "run"]].rename(columns={"credit": "credit_lens", "run": "run_lens"})
+    return d.merge(lz, on=["CERT", "repdte"], how="left")
+
+
+def payload(rows, peers):
+    quarters = []
+    for k, (_, r) in enumerate(rows.iloc[::-1].iterrows()):
+        p = peers[peers.repdte == r.repdte]
+        r3 = lambda v: None if pd.isna(v) else round(float(v), 3)
+        quarters.append({
+            "quarter": f"T-{k}" if k else "T",
+            "failure_model": r3(r.failure_model), "run_lens": r3(r.run_lens), "credit_lens": r3(r.credit_lens),
+            "dimensions": {dim: r3(r[dim]) for dim in DIMENSIONS},
+            "size_percentile": round(float((p.log_assets < r.log_assets).mean() * 100), 1),
+            "ratios": {c: None if pd.isna(r[c]) else round(float(r[c]), 4) for c in RATIOS},
+            "peer_percentile": {c: None if pd.isna(r[c]) else round(float((p[c] < r[c]).mean() * 100), 1) for c in RATIOS},
+        })
+    return quarters
 
 
 def dump():
-    frozen = json.loads((ROOT / "frozen.json").read_text())
-    cols = frozen["models"]["B"]["features"]
-    model = load_frozen(MODELS / "logit_B.pkl", frozen["models"]["B"]["sha256"])
-    peers, d = scored()
-
-    named = failures()
-    named = named[named.NAME.str.upper().isin(NAMED)]
-    targets = [(c, d[d.CERT == c].repdte.max()) for c in named.CERT]
+    d = scored()
     q4 = d[d.repdte == "2022-12-31"]
-    top = pd.concat([q4.nlargest(5, "run"), q4.nlargest(5, "credit")]).CERT.drop_duplicates()
-    targets += [(c, pd.Timestamp("2022-12-31")) for c in top if c not in set(named.CERT)]
-    random.Random(0).shuffle(targets)  # file order must not reveal which banks are the named failures
+    top = pd.concat([q4.nlargest(5, "failure_model"), q4.nlargest(5, "run_lens")]).CERT
+    certs = list(dict.fromkeys(NAMED + [c for c in top if c not in NAMED]))
+    random.Random(1).shuffle(certs)  # file order must not reveal which banks are the named failures
 
     (MEMOS / "payloads").mkdir(parents=True, exist_ok=True)
     (MEMOS / "raw").mkdir(exist_ok=True)
     (MEMOS / "payloads" / "INSTRUCTIONS.md").write_text(SYSTEM + "\n")
     key = {}
-    for n, (cert, asof) in enumerate(targets, 1):
-        rows = d[(d.CERT == cert) & (d.repdte <= asof)].sort_values("repdte").tail(3)
-        (MEMOS / "payloads" / f"bank_{n:02d}.json").write_text(json.dumps(payload(rows, peers, model, cols), indent=1))
-        key[n] = {"CERT": int(cert), "repdte": str(asof.date())}
+    for n, cert in enumerate(certs, 1):
+        rows = d[(d.CERT == cert) & (d.repdte <= "2022-12-31")].sort_values("repdte").tail(3)
+        (MEMOS / "payloads" / f"bank_{n:02d}.json").write_text(json.dumps(payload(rows, d), indent=1))
+        key[n] = {"CERT": int(cert), "repdte": "2022-12-31"}
     KEY.write_text(json.dumps(key, indent=1))
-    print(f"{len(targets)} payloads written")
+    print(f"{len(certs)} payloads written")
 
 
 def render():
-    _, d = scored()
+    d = scored()
     for n, k in json.loads(KEY.read_text()).items():
         raw = MEMOS / "raw" / f"bank_{int(n):02d}.md"
         r = d[(d.CERT == k["CERT"]) & (d.repdte == k["repdte"])].iloc[0]
-        header = f"# {r.NAME} ({r.CITY}, {r.STALP}) — report {r.repdte.date()}, Model B rank top {r.pct_logit_B:.2%}\n"
-        header += f"Failed: {r.faildate.date() if pd.notna(r.faildate) else 'no'}. Memo written blind (anonymized as Bank {int(n)}).\n\n"
+        header = (f"# {r.NAME} ({r.CITY}, {r.STALP}) — report {r.repdte.date()}, failure model {r.failure_model:.0%}, "
+                  f"run lens {r.run_lens:.0%}\nFailed: {r.faildate.date() if pd.notna(r.faildate) else 'no'}. "
+                  f"Memo written blind (anonymized as Bank {int(n)}).\n\n")
         (MEMOS / f"{int(n):02d}_{k['CERT']}.md").write_text(header + raw.read_text())
         print(n, r.NAME)
 

@@ -128,3 +128,16 @@ def test_fed_name_matching():
                           "date": pd.to_datetime(["2023-03-14"] * 3)})
     m = match(loans, banks, pd.Series(dtype=float))
     assert m.CERT.tolist()[:2] == [1, 2] and pd.isna(m.CERT.iloc[2]) and m.credit_union.iloc[2]
+
+
+def test_v31_fixes_capital_zero_and_efficiency_ratio():
+    from features_v3 import build
+    yields = pd.DataFrame({c: 1.0 for c in ["DGS3MO", "DGS1", "DGS3", "DGS5", "DGS10"]},
+                          index=pd.date_range("2020-03-31", periods=12, freq="QE"))
+    raw = _raw_v3([dict(CERT=1, REPDTE="20220331", IDT1RWAJR=0.0, EEFF=60.0),
+                   dict(CERT=2, REPDTE="20220331", IDT1RWAJR=12.0, EEFF=50.0)]).assign(IEFF=100.0)
+    none = pd.DataFrame({"CERT": [99.0], "NAME": ["Z"], "faildate": pd.to_datetime(["2001-01-01"])})
+    old = build(raw, yields, none).set_index("CERT")
+    new = build(raw, yields, none, fixed=True).set_index("CERT")
+    assert old.loc[1, "tier1_rbc"] == 0 and pd.isna(new.loc[1, "tier1_rbc"]) and new.loc[2, "tier1_rbc"] == 12
+    assert old.loc[1, "efficiency"] == 60 and new.loc[1, "efficiency"] == pytest.approx(0.6)
