@@ -1,0 +1,14 @@
+# Bank 10: supervisory memo
+
+**Dominant risk: severe credit problems funded by brokered and borrowed money.** Failure model 0.999-1.0; credit lens 0.998, 0.992, 0.997. NPLs+OREO are 31.2% (97.7th percentile), up from 14.0% at T-1. The Texas ratio is 200% (99.6th): problem assets are about double capital plus reserves. Reserve coverage is 3.6% (0.2nd). Loans shrank 46%, 31% and 10% across the three quarters.
+
+**Funding.** Brokered deposits are 55.5% (98.1st), borrowings 23.7% of assets (99.1st), loans/deposits 127%. Deposits grew 45.5% and average large accounts are $6.86M.
+
+**Data concerns.** Tier 1 risk-based capital is not reported in any quarter. Past-due loans spike to 10.8% at T-1 against 0.8% and 1.05% either side. A 31.2% problem-asset level alongside 15.44% leverage, 3.6% reserve coverage and positive ROA (0.90%) is hard to reconcile and should be verified before interpretation. NIM is 6.17% (99.0th).
+
+**Model disagreement.** The run lens is mid-range (0.683, 0.510, 0.478) because securities losses are negligible (1.2% of Tier 1), mark-to-market capital is positive (3.8%) and uninsured deposits fell from 64% to 42%. Its inputs do not capture brokered or borrowed funding, so it likely understates funding risk here; the failure model is the better guide.
+
+**Questions**
+1. Can the bank reconcile its problem-asset figures with its reserves, capital and reported earnings?
+2. Why is Tier 1 risk-based capital not reported?
+3. How much brokered and borrowed funding matures within a year, and can it be rolled once credit losses are recognized?

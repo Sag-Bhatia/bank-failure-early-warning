@@ -1,0 +1,54 @@
+{
+ "bank_01": {
+  "cited": 31,
+  "untraced": []
+ },
+ "bank_02": {
+  "cited": 32,
+  "untraced": []
+ },
+ "bank_03": {
+  "cited": 35,
+  "untraced": []
+ },
+ "bank_04": {
+  "cited": 43,
+  "untraced": []
+ },
+ "bank_05": {
+  "cited": 36,
+  "untraced": []
+ },
+ "bank_06": {
+  "cited": 44,
+  "untraced": []
+ },
+ "bank_07": {
+  "cited": 43,
+  "untraced": []
+ },
+ "bank_08": {
+  "cited": 33,
+  "untraced": []
+ },
+ "bank_09": {
+  "cited": 42,
+  "untraced": []
+ },
+ "bank_10": {
+  "cited": 37,
+  "untraced": []
+ },
+ "bank_11": {
+  "cited": 38,
+  "untraced": []
+ },
+ "bank_12": {
+  "cited": 38,
+  "untraced": []
+ },
+ "bank_13": {
+  "cited": 40,
+  "untraced": []
+ }
+}

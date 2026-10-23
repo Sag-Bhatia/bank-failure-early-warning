@@ -1,0 +1,16 @@
+# Bank 12: supervisory memo
+
+**Dominant risks: tightening liquidity and rate-driven capital erosion.** Run lens 0.935, 0.935, 0.980 (T-2 to T); failure model 0.910, 0.936, 0.949. The liquid-asset ratio fell from 25% to 18% to 16% and the run gap rose from 1.34 to 1.62 to 1.99 (80.4th percentile), even though uninsured deposits are moderate (34%). Mark-to-market capital went from +0.58% to -2.45% to -1.82%; unrealized securities losses equal 49% of Tier 1 (87.5th) and long-dated assets 4.6x Tier 1.
+
+**Credit** is moderate: NPLs+OREO 0.36% and Texas ratio 1.48%, but past-due loans rose from 0.24% to 0.37% to 0.47% (78.6th). Construction is 29% of capital. Credit lens 0.457, 0.438, then 0.578.
+
+**Earnings.** Efficiency is 76% (78.8th) and ROA slipped from 1.05% to 0.99% to 0.91%; loans are shrinking (-3.0%).
+
+**Data gap.** Tier 1 risk-based capital is not reported in any quarter, which limits the capital assessment. Book equity/assets is 5.32% (9.1st) against 9.86% leverage.
+
+**Model view.** Both models are high. The failure model reads high despite moderate credit, so it appears to be weighting capital and earnings; the run lens is driven by the shrinking liquid buffer and market-value losses.
+
+**Questions**
+1. Why is Tier 1 risk-based capital not reported?
+2. What is driving the steady fall in liquid assets, and how much of what remains is pledged?
+3. Which loans account for the rise in past-due balances?

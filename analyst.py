@@ -35,7 +35,7 @@ RATIOS = [c for c in FEATURES if c not in ("log_assets", "big_operating")]
 
 def scored():
     """2019-2024 bank-quarters with the frozen F_B score, both v2 lenses and the seven dimensions."""
-    d = pd.read_parquet(OUT / "v3" / "e2.parquet")
+    d = pd.read_parquet(OUT / "v3_v31" / "e2.parquet")  # production model is v3.1 (bug-fixed)
     d["failure_model"] = d.groupby("repdte").F_B_mono.rank(pct=True)
     lz = history()[["CERT", "repdte", "credit", "run"]].rename(columns={"credit": "credit_lens", "run": "run_lens"})
     return d.merge(lz, on=["CERT", "repdte"], how="left")

@@ -1,87 +1,88 @@
 # Two ways banks fail
 
-Banks fail slowly from bad loans, or quickly from a run on uninsured deposits. A screen built for one kind is nearly blind to the other.
-
-This project tests two **zero-parameter** screens on every US bank, through the 2008 crisis and the 2023 panic. Every rule was preregistered before any outcome was computed.
+An early-warning system for US bank failures, built from public call reports for every US bank from 1985 to 2024. Each version was preregistered, frozen, and then tested once on data it had never seen. The results include the misses and the bugs.
 
 **Interactive write-up and bank lookup:** https://claude.ai/artifact/1MTpzK19okzunUqMfZhmqz (private until shared from its Share menu)
 
-## Findings ([PREREG_v2.md](PREREG_v2.md), results in [out/v2/results.json](out/v2/results.json))
+## The system
 
-| Test | Banks | Run lens | Credit lens | Preregistered hypothesis |
-|---|---|---|---|---|
-| **2023 panic.** 2022Q4 score → uninsured deposit loss in 2023Q1 | 4,662 | ρ 0.072 (0.044–0.102) | ρ −0.011 (−0.041–0.018) | H1, run > credit: **supported** |
-| **2008 crisis.** 2007Q4 score → failure 2008–2011 | 7,788 (362 failed) | AUC 0.700 | AUC 0.746 | H2, credit > run: **supported** |
-| **Calm placebo.** 2018Q4 score → 2019Q1 uninsured change | 5,345 | ρ 0.017 (−0.011–0.044) | ρ −0.001 | H3, run stronger in panic: **supported** |
+| Component | What it is | Use it for | Evidence |
+|---|---|---|---|
+| **Comprehensive failure model (v3.1)** | Gradient boosting on 29 ratios in 7 dimensions, with theory-enforced directions (monotonic constraints). Trained on 1986–2018. | Credit-driven failure within a year | Trained on 1986–2006, tested on 2008: **AUC 0.81 vs 0.75 for the Texas ratio** (difference CI 0.03–0.08) |
+| **Run lens (v2)** | Zero-parameter: capital at market prices plus uninsured deposits per dollar of liquid assets | Run vulnerability | 2023: predicted uninsured flight (ρ 0.07, CI 0.04–0.10) and **Fed emergency borrowing (AUC 0.63)** better than any learned model |
+| **Credit lens (v2)** | Zero-parameter Texas ratio | Baseline | — |
+| **Seven-dimension profile** | Capital, asset quality, earnings, liquidity, rate sensitivity, depositors, growth and concentration (percentiles) | Explanation | Descriptive |
+| **Blind AI analyst** | A Claude agent writes memos from anonymized numbers; a script checks every number it cites | Explanation | All cited numbers traced to source |
 
-What the numbers mean in practice:
-- **2023.** The run lens's top 5% lost a mean 5.7% of uninsured deposits in 2023Q1, while the other 95% gained 1.7%. Among banks over $1B, it was −10.1% against +4.6%.
-- **2008.** The credit lens's top 5% held 29% of all failures; the run lens's top 5% held 13%.
-- **The named 2023 failures** all scored high on the run lens and low-to-middling on the credit lens:
-  - SVB: run 92nd percentile, credit 36th.
-  - First Republic: run 90th, credit 31st.
-  - Signature: run 85th, credit 60th.
-  - Republic First, which failed in April 2024, was in the run lens's top 2% fifteen months earlier.
+## What the three versions found
 
-**What these screens are, and are not:**
-- The effects are modest. These screens shift the odds and tell a supervisor where to look; they do not predict which bank fails next.
-- The run lens marks a standing weakness, not a countdown. SVB sat at the 85th–88th percentile every quarter from 2019. What changed in 2022 was the capital half, as rate rises erased its capital at market prices.
-- No signal on two secondary outcomes: neither lens predicted total deposit changes or FHLB borrowing. The run lens predicts *uninsured* flight specifically.
+**v1, one learned model ([FEATURES.md](FEATURES.md)).**
+- Trained on 2001–2018 and tested on 2019–2024. It caught 10 of 18 failures and missed SVB, Signature and First Republic.
+- From 2008-era data it learned that uninsured deposits and large securities books were *protective*.
 
-## The lenses ([lenses.py](lenses.py))
-Both are within-quarter percentile ranks with nothing fitted.
-- **Credit:** the Texas ratio, (noncurrent loans + foreclosed real estate) / (equity − intangibles + loan-loss reserves).
-- **Run:** the mean of two percentiles:
-  - capital after unrealized held-to-maturity losses, divided by assets (low = fragile);
-  - uninsured deposits per dollar of cash plus unpledged securities (high = fragile).
+**v2, two zero-parameter lenses ([PREREG_v2.md](PREREG_v2.md)).**
+- **Credit lens:** predicted 2008 failures better (AUC 0.75 vs 0.70).
+- **Run lens:** predicted 2023 uninsured flight; the credit lens did not.
+- **Calm 2019 placebo:** the run lens predicted nothing, as it should.
+- All three hypotheses supported.
 
-## The AI analyst ([analyst.py](analyst.py), [factcheck.py](factcheck.py))
-- `analyst.py dump` writes shuffled, anonymized payloads: ratios, both lenses, peer percentiles and learned-model contributions. They contain no name, place, date or exact size.
-- A fresh Claude agent, allowed to read only that folder, writes one memo per bank. Names are attached afterwards by `analyst.py render`.
-- `factcheck.py` checks every number a memo cites against its payload. Result: 452 of 452 traced.
-- On SVB's December 2022 numbers, written blind: *"Scoring deposit outflows and uninsured funding as protective looks wrong for this profile; the run screen should take priority."*
+**v3, the comprehensive system ([PREREG_v3.md](PREREG_v3.md)).**
 
-## Disclosed problems and hindsight
-- **I chose the run-lens mechanism knowing 2023 happened.** The defences:
-  - it has no fitted parameters;
-  - it is judged on cross-sections of thousands of banks;
-  - it was expected to lose the 2008 test, and did;
-  - it had to pass the calm-quarter placebo, and did.
-- **The credit lens absorbs rate losses in 2022.** The blind analyst found five credit-lens top banks with negative book equity (securities losses run through equity) but healthy regulatory leverage of 9–12%. In 2022 the Texas ratio therefore partly measured rate losses. The results are left exactly as preregistered.
-- **Loans are not marked to market,** because call reports have no loan fair values.
-- **Data are amended, not as-filed.** BankFind serves the latest amended figures. Reports are treated as public 45 days after quarter end.
+| Test | Result | Hypothesis |
+|---|---|---|
+| **E1.** 2008 failures, out of time (failure model trained on 1986–2006; 8,630 banks, 413 failures) | Model 0.81 · logistic on the same inputs 0.76 · Texas ratio 0.75 · same model without direction rules 0.75 | H1 **supported**; H4 (constraints help) **+0.06, CI 0.05–0.08** |
+| **E2.** 2019–2024 failures (18) | 10/18 caught, the same as v1. Republic First flagged 437 days early. SVB, Signature and First Republic missed. | Descriptive |
+| **E3.** 2023 Fed emergency borrowing (BTFP and discount window, 13 Mar–31 May; 642 of 4,702 banks) — data never used before | Run lens 0.63 · failure model 0.58 · credit lens 0.52 · **learned run model 0.42** | H2 **failed** |
+| **E4.** 2019 placebo (discount window) | Learned run model 0.62, higher than in the panic | H3 **failed** |
 
-## The first version, and why it was replaced ([FEATURES.md](FEATURES.md), [out/metrics.csv](out/metrics.csv))
-- **What it did:** a learned logistic model, trained on 2001–2018 and frozen (models are SHA-256 pinned), then tested once on 2019–2024.
-- **How it did:** it caught 10 of 18 failures, about as many as the Texas ratio alone, and missed SVB, Signature and First Republic completely.
-- **Why it missed them:** from 2008-era history it learned that large securities books and uninsured deposits were *protective*.
-- **The one partial exception:** a gradient-boosting check, named in advance as a robustness check, flagged SVB and Signature, but alongside 97 banks on its 2022 watchlist.
-- **What it led to:** one score cannot learn both kinds of failure from a history that holds mostly one kind. That conclusion drove the two-lens redesign.
-- Its outputs are kept unchanged in `out/`, and its memos in `out/memos_v1/`.
+**Why the learned run model failed** (post-hoc diagnosis, in `out/v3/`):
+- Its training label, "uninsured deposits fell 20% in a quarter", is mostly noise at tiny banks: 21% of the smallest fifth against 6% of the largest.
+- So the model learned "small bank". Its scores correlate −0.78 with size and −0.06 with the run lens.
+- A size-adjusted label might work, but designing it after seeing 2023 and re-testing on 2023 is hindsight. It is left as future work for a genuinely new episode.
+
+## Bugs found after the v3 results, and the v3.1 re-run
+1. **`efficiency` used the dollar numerator (EEFF)** instead of the ratio (EEFF/IEFF).
+2. **`tier1_rbc` read 0 when not reported.** That covers every bank before 1990, and about 37% of banks from 2020 (community-bank-leverage-ratio electors). The constrained model treated those banks as having no capital.
+
+v3.1 fixes only these two, with the fix committed before re-running (`0129249`). The conclusions held to two decimals: E1 0.81, E3 0.42 vs 0.63, E2 10 of 18. Both versions' models and results are committed. v3.1 is the production model.
+
+## Other disclosed limitations
+- **The loan mark-to-market estimate is crude:** maturity buckets × effective duration × the two-year rise in Treasury yields. It ignores deposit-franchise value.
+- **Fed borrowing mixes distress with precaution.** Sums include rolled-over discount-window loans. Banks are matched by RSSD, then by routing number, then by name; 920 of 1,031 bank borrowers were matched. The unmatched dollars are mostly the SVB and Signature bridge banks, whose failures already count as positives. A post-hoc check with better name matching changed no AUC.
+- **Unavailable or missing fields:**
+  - the large-business-operating-account field exists only for 2010–2012;
+  - swap notionals are sparse after 2020;
+  - fraud is invisible to call reports.
+- **BankFind serves amended figures, not as-filed.** Reports are treated as public 45 days after quarter end.
 
 ## How validity was protected
-- **Commit order is the proof:**
-  1. preregistration (`b01ce2f`, then v2 in `9bd8a01`);
+- **Commit order:**
+  1. preregistration (`b01ce2f`, `9bd8a01`, `4e37e55`);
   2. code tested on synthetic data;
-  3. results committed unedited (`3124c2c` for v1, `acac31b` for v2).
-- **`pytest test_validity.py`** runs 9 checks, against the real data and synthetic cases:
+  3. frozen models with SHA-256 hashes (`2d0d0ff`, `3e7ccc3`, `54f66fc`);
+  4. results committed unedited (`3124c2c`, `acac31b`, `a12a34c`, `a28c1fe`).
+- **Scoring refuses to run** if a model file's hash differs from its frozen record.
+- **`pytest test_validity.py`** runs 12 checks, against real data and synthetic cases:
   - no look-ahead;
-  - the train/test embargo;
+  - the embargoes;
   - the label windows;
-  - the lens direction and outcome rules;
+  - the loan mark-to-market arithmetic;
+  - the run-label rules;
+  - the Fed name matching;
+  - the v3.1 fixes;
   - the fact-checker catching invented numbers.
 
 ## Run it
 ```bash
-uv venv .venv && uv pip install --python .venv/bin/python pandas scikit-learn scipy pyarrow matplotlib requests pytest
-.venv/bin/python fetch.py            # FDIC BankFind, ~10 min
-.venv/bin/python features.py
+uv venv .venv && uv pip install --python .venv/bin/python pandas scikit-learn scipy pyarrow matplotlib requests openpyxl pytest
+.venv/bin/python fetch.py && .venv/bin/python features.py          # v1 data (2001-2024)
+.venv/bin/python train.py && .venv/bin/python backtest.py          # v1
+.venv/bin/python evaluate_v2.py                                    # v2 (needs data/extra.parquet)
+.venv/bin/python fetch_v3.py && .venv/bin/python fetch_ieff.py 1985-03-31 2024-12-31
+.venv/bin/python features_v3.py v31 && .venv/bin/python train_v3.py v31 && .venv/bin/python evaluate_v3.py v31
 .venv/bin/python -m pytest test_validity.py
-.venv/bin/python train.py && .venv/bin/python backtest.py     # v1 (do not re-train after backtesting)
-.venv/bin/python evaluate_v2.py      # v2; needs data/extra.parquet (pledged securities, FHLB) for the test quarters
-.venv/bin/python analyst.py dump     # then a blind agent writes out/memos/raw/, then:
-.venv/bin/python analyst.py render && .venv/bin/python factcheck.py
-.venv/bin/python build_page.py       # page/ data files
+.venv/bin/python analyst.py dump      # then a blind agent writes out/memos/raw/, then:
+.venv/bin/python analyst.py render && .venv/bin/python factcheck.py && .venv/bin/python build_page.py
 ```
 
-Data: FDIC BankFind financials and failure list. This is a research backtest, not a rating of any bank and not investment advice. Bank histories end in 2024 on purpose.
+Data: the FDIC BankFind API, Federal Reserve BTFP and discount-window disclosures, and FRED. This is a research backtest, not a rating of any bank and not investment advice. Bank histories on the page end in 2024 on purpose.

@@ -76,6 +76,7 @@ svg text { font: 400 11px var(--font-data); fill: var(--muted); }
 button:focus-visible, input:focus-visible, .chip:focus-visible, .result:focus-visible { outline: 2px solid var(--run); outline-offset: 2px; }
 .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
 .callout { border-left: 3px solid var(--run); padding: 4px 0 4px 16px; color: var(--ink-2); }
+.prose ul { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 2px; }
 /* lookup */
 .lookup { display: grid; gap: 14px; }
 .search { position: relative; max-width: 520px; }
@@ -112,10 +113,11 @@ code { font-family: var(--font-data); font-size: .9em; }
 
 <main>
   <header>
-    <p class="eyebrow">US call reports · 2001–2024 · FDIC BankFind data</p>
+    <p class="eyebrow">US call reports · 1985–2024 · FDIC, Federal Reserve and FRED data</p>
     <h1>Two ways banks fail</h1>
     <p class="lede">Banks die slowly from bad loans, or quickly from a run on uninsured deposits. A screen built for one kind is nearly blind to the other. I tested two simple screens on every US bank, through the 2008 crisis and the 2023 panic, with the rules written down before any outcome was computed.</p>
     <p class="lede"><span class="lens-key"><i style="background:var(--credit)"></i>Credit lens</span>: problem loans against capital (the Texas ratio). <span class="lens-key"><i style="background:var(--run)"></i>Run lens</span>: capital after unrealized securities losses, plus uninsured deposits per dollar of liquid assets. Neither lens has a single fitted parameter.</p>
+    <p class="lede">Then I built the comprehensive model: 29 ratios across seven risk dimensions, with theory hard-wired as constraints. It was trained on 1986–2006 and tested on 2008, a crisis it never saw. It beat the single-ratio screen there. For 2023 runs, every learned model I built lost to the three-ratio lens. Both results are below, with the misses and bugs left in.</p>
   </header>
 
   <div class="findings" id="findings"></div>
@@ -160,6 +162,40 @@ code { font-family: var(--font-data); font-size: .9em; }
     </div>
   </section>
 
+  <section aria-labelledby="sv3">
+    <div class="prose">
+      <h2 id="sv3">The comprehensive model: theory as a constraint</h2>
+      <p>The two lenses are three ratios between them. The full model covers what a supervisor actually rates, with 29 ratios across seven dimensions:</p>
+      <ul>
+        <li><strong>Capital</strong>, including capital after loans and securities are marked to market.</li>
+        <li><strong>Asset quality.</strong></li>
+        <li><strong>Earnings.</strong></li>
+        <li><strong>Liquidity and funding.</strong></li>
+        <li><strong>Rate sensitivity</strong>, from the maturity schedule.</li>
+        <li><strong>Depositors</strong>: the uninsured share and the average size of large accounts.</li>
+        <li><strong>Growth and concentration.</strong></li>
+      </ul>
+      <p>It is a gradient-boosted model with one rule built in. Wherever theory says which way a ratio cuts, the model is forbidden from learning the opposite. Thinner capital or more uninsured deposits can never lower a bank's risk score. That was the exact mistake of the first version.</p>
+      <p>The failure model was trained only on 1986–2006, the savings-and-loan and early-1990s crises, about 1,500 failures. It was then tested on 2008, a crisis it never saw.</p>
+    </div>
+    <div class="two-col">
+      <figure>
+        <p class="fig-title">2008 failures, out of time: AUC with 95% interval</p>
+        <div id="cv3e1"></div>
+        <figcaption id="capv3e1"></figcaption>
+      </figure>
+      <figure>
+        <p class="fig-title">2023: which banks needed emergency Fed loans</p>
+        <div id="cv3e3"></div>
+        <figcaption id="capv3e3"></figcaption>
+      </figure>
+    </div>
+    <div class="prose">
+      <p><strong>Where learning failed: runs.</strong> I also trained a model on 30 years of ordinary quarters in which a bank's uninsured deposits fell 20% or more, hoping it would learn run risk without leaning on 2023. It learned the wrong thing. That kind of drop is mostly noise at very small banks: it happens to 21% of the smallest fifth of banks and 6% of the largest. So the model learned "small bank" and ranked the 2023 Fed borrowers worse than chance. The three-ratio run lens, built from theory, did far better.</p>
+      <p>A size-adjusted label would probably fix this. But designing that fix after seeing 2023, and then testing it on 2023 again, is the hindsight this project exists to avoid. So the run model stays a documented failure, and the run lens stays the run signal.</p>
+    </div>
+  </section>
+
   <section aria-labelledby="sscatter">
     <div class="prose">
       <h2 id="sscatter">Where the 2023 failures sat</h2>
@@ -176,7 +212,7 @@ code { font-family: var(--font-data); font-size: .9em; }
   <section aria-labelledby="slookup" class="lookup">
     <div class="prose">
       <h2 id="slookup">Look up a bank</h2>
-      <p>Both lenses for every US bank, quarter by quarter, 2019–2024, beside the risk rank from the machine-learned model of the first version. Percentiles are against all banks that quarter; 100 is the most fragile. History stops at the end of 2024 on purpose: this is a backtest, not a live rating.</p>
+      <p>Every US bank, quarter by quarter, 2019–2024: the comprehensive failure model, both lenses, and the seven-dimension profile. Percentiles are against all banks that quarter; 100 is the most fragile. History stops at the end of 2024 on purpose: this is a backtest, not a live rating.</p>
     </div>
     <div class="search">
       <label for="q" class="eyebrow" style="display:block;margin-bottom:6px">Search by bank name or city</label>
@@ -208,13 +244,15 @@ code { font-family: var(--font-data); font-size: .9em; }
       <div><h3>Thousands of banks, not three</h3><p>The tests use every bank: 4,662 in 2023, 7,788 in 2008, 5,345 in the placebo. SVB, Signature and First Republic are illustrations, not the evidence.</p></div>
       <div><h3>What is still hindsight</h3><p>I picked the run-lens mechanism knowing 2023 happened. The defences are the zero parameters, the cross-sections, the 2008 test it was expected to lose, and the calm-quarter placebo it had to pass.</p></div>
       <div><h3>Effects are modest</h3><p>The rank correlations are small (0.07 in 2023). These are screens that shift the odds and tell a supervisor where to look. They do not predict which bank fails next.</p></div>
-      <div><h3>Analyst memos, checked</h3><p>A Claude agent wrote each memo blind, from anonymized numbers only. A script then checked all 452 numbers the memos cite; every one appears in the source data.</p></div>
-      <div><h3>A flaw the memos caught</h3><p>The blind analyst noticed that five of the credit lens's top banks for 2022 had negative book equity but healthy regulatory capital. Securities losses run through book equity, which the Texas ratio uses. So in 2022 the credit lens partly measured rate losses, not bad loans. The results above are left as preregistered.</p></div>
+      <div><h3>Analyst memos, checked</h3><p>A Claude agent wrote each memo blind, from anonymized numbers only. A script then checked all 492 numbers the current memos cite; every one appears in the source data.</p></div>
+      <div><h3>A flaw the memos caught</h3><p>The blind analyst noticed that five of the credit lens's top banks for 2022 had negative book equity but healthy regulatory capital. Securities losses run through book equity, which the Texas ratio uses. So in 2022 the credit lens partly measured rate losses, not bad loans. The results above are left as preregistered; the comprehensive model uses regulatory capital instead.</p></div>
+      <div><h3>Two bugs, both runs shown</h3><p>After the comprehensive model's results were in, I found two unit errors. The "efficiency" input was a dollar amount, not a ratio. And banks that do not report risk-based capital (all banks before 1990, and 37% from 2020) read as having zero capital. I fixed both, changed nothing else, and re-ran. Every conclusion held to two decimals. Both versions are committed.</p></div>
+      <div><h3>Outcomes no one had looked at</h3><p>The 2023 test of the comprehensive model uses Federal Reserve emergency-loan records, the BTFP and discount-window loans, matched to banks. No earlier version of this project had touched them.</p></div>
     </div>
   </section>
 
   <footer>
-    Data: FDIC BankFind quarterly financials and failure list, as amended. Report figures count as public 45 days after quarter end. Loans are not marked to market, because call reports do not include loan fair values. This is a research backtest, not a rating of any bank, and not investment advice. Code, preregistrations and tests: <code>bank-ews/</code>.
+    Data: FDIC BankFind quarterly financials and failure list, as amended. Federal Reserve BTFP and discount-window transaction data. Treasury yields from FRED. Report figures count as public 45 days after quarter end. Loan losses at market prices are estimated from maturity buckets and two-year yield changes; that estimate is crude, and it ignores deposit-franchise value. This is a research backtest, not a rating of any bank, and not investment advice. Code, preregistrations and tests: <code>bank-ews/</code>.
   </footer>
 </main>
 
@@ -352,13 +390,45 @@ function scatter(host, S) {
 }
 
 function findings(D) {
-  const r = D.results, t1 = r.T1_2023_uninsured, t2 = r.T2_2008_failures, t3 = r.T3_placebo_2019;
+  const r = D.results, t1 = r.T1_2023_uninsured, t2 = r.T2_2008_failures, v = D.v3;
+  const a = k => v.e1.find(x => x.key === k).auc, b = k => v.e3.find(x => x.key === k).auc;
   const items = [
-    ["2023 panic", "Run lens predicted uninsured flight", `ρ ${t1.run.rho.toFixed(2)} vs credit ${t1.credit.rho.toFixed(2)} · ${t1.n.toLocaleString()} banks · difference significant`],
-    ["2008 crisis", "Credit lens predicted failures better", `AUC ${t2.credit.auc.toFixed(2)} vs run ${t2.run.auc.toFixed(2)} · ${t2.failures} failures · difference significant`],
-    ["2019 placebo", "Run lens predicted nothing in calm times", `ρ ${t3.run.rho.toFixed(2)} (95% CI ${t3.ci95.run.join(" to ")})`],
+    ["2008, never seen in training", "Comprehensive model beat the Texas ratio", `AUC ${a("F_A_mono").toFixed(2)} vs ${a("v2_credit").toFixed(2)} · trained on 1986–2006 only · ${v.e1_n[1]} failures`],
+    ["Theory as a constraint", "Direction rules added +0.06 AUC", `Same model unconstrained: ${a("F_A_unc").toFixed(2)} · constrained: ${a("F_A_mono").toFixed(2)}`],
+    ["2023 panic", "A three-ratio run lens beat every learned model", `Fed emergency borrowers: AUC ${b("v2_run").toFixed(2)} vs learned run model ${b("R_mono").toFixed(2)}`],
+    ["2023 deposits", "Run lens predicted uninsured flight", `ρ ${t1.run.rho.toFixed(2)} vs credit lens ${t1.credit.rho.toFixed(2)} · ${t1.n.toLocaleString()} banks`],
   ];
   $("#findings").innerHTML = items.map(([w, h, n]) => `<div class="finding"><span class="when">${w}</span><span class="what">${h}</span><span class="num">${n}</span></div>`).join("");
+}
+
+const SCORE_NAMES = {
+  F_A_mono: "Comprehensive model", F_A_logit: "Same inputs, logistic", F_A_unc: "Same inputs, no direction rules",
+  v2_credit: "Credit lens (Texas ratio)", v2_run: "Run lens", F_B_mono: "Comprehensive failure model",
+  R_mono: "Learned run model", R_logit: "Learned run model, logistic", R_unc: "Learned run model, no rules",
+};
+// Dot-and-interval chart of AUCs; 0.5 = no better than chance.
+function aucChart(host, items) {
+  host.innerHTML = "";
+  const W = 640, row = 30, m = { t: 8, r: 24, b: 30, l: 250 }, H = m.t + m.b + row * items.length;
+  const lo = 0.35, hi = 0.85, X = v => m.l + (W - m.l - m.r) * (v - lo) / (hi - lo);
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "AUC by score with 95% intervals" }, host);
+  [0.4, 0.5, 0.6, 0.7, 0.8].forEach(t => {
+    svgEl("line", { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b, stroke: t === 0.5 ? css("--axis") : css("--rule"), "stroke-width": t === 0.5 ? 1.5 : 1 }, svg);
+    const tx = svgEl("text", { x: X(t), y: H - m.b + 16, "text-anchor": "middle" }, svg); tx.textContent = t === 0.5 ? "0.5 chance" : t.toFixed(1);
+  });
+  const fig = host.closest("figure"), tip = tipFor(fig);
+  items.forEach((it, i) => {
+    const y = m.t + row * i + row / 2, lens = it.key.startsWith("v2_");
+    const color = it.key === "v2_run" ? css("--run") : it.key === "v2_credit" ? css("--credit") : css("--ink");
+    const lt = svgEl("text", { x: m.l - 12, y: y + 4, "text-anchor": "end", style: `fill:${css("--ink-2")};font-family:var(--font-body);font-size:12px;font-weight:${i === 0 ? 600 : 400}` }, svg);
+    lt.textContent = SCORE_NAMES[it.key] || it.key;
+    svgEl("line", { x1: X(it.ci[0]), x2: X(it.ci[1]), y1: y, y2: y, stroke: color, "stroke-width": 2, "stroke-linecap": "round" }, svg);
+    svgEl("circle", { cx: X(it.auc), cy: y, r: 5, fill: lens ? color : css("--ink"), stroke: css("--surface"), "stroke-width": 2 }, svg);
+    const vt = svgEl("text", { x: X(it.ci[1]) + 8, y: y + 4 }, svg); vt.textContent = it.auc.toFixed(2);
+    const hit = svgEl("rect", { x: 0, y: y - row / 2, width: W, height: row, fill: "transparent" }, svg);
+    hit.addEventListener("mousemove", ev => placeTip(tip, fig, ev, `<b>${SCORE_NAMES[it.key]}</b><br>AUC ${it.auc.toFixed(3)}<br>95% interval ${it.ci[0]} to ${it.ci[1]}`));
+    hit.addEventListener("mouseleave", () => tip.hidden = true);
+  });
 }
 
 function v1table(D) {
@@ -379,16 +449,41 @@ function bankView(b) {
   $("#bank").innerHTML = `
     <div class="bank-head"><h3>${b.n}</h3><span class="eyebrow" style="margin:0">${b.p}</span>
       ${b.f ? `<span class="pill">Failed ${b.f}</span>` : `<span class="pill ok">No failure through 2025</span>`}</div>
-    <div class="stats"><span>Assets <b>${fmtA(b.a)}</b></span><span>Run lens, ${ql[lastIdx]} <b>${b.r[lastIdx] ?? "n/a"}</b></span><span>Credit lens <b>${b.c[lastIdx] ?? "n/a"}</b></span><span>Learned model <b>${b.m[lastIdx] ?? "n/a"}</b></span></div>
-    <figure><div class="legend"><span><i style="background:var(--run)"></i>Run lens</span><span><i style="background:var(--credit)"></i>Credit lens</span><span><i style="background:var(--model)"></i>Learned model (v1)</span></div><div id="cbank"></div>
-      <figcaption>Percentile among all US banks each quarter; 100 = most fragile. Gaps mean the inputs were missing.</figcaption></figure>
+    <div class="stats"><span>Assets <b>${fmtA(b.a)}</b></span><span>Run lens, ${ql[lastIdx]} <b>${b.r[lastIdx] ?? "n/a"}</b></span><span>Credit lens <b>${b.c[lastIdx] ?? "n/a"}</b></span><span>Failure model <b>${b.m[lastIdx] ?? "n/a"}</b></span></div>
+    <div class="two-col">
+      <figure><div class="legend"><span><i style="background:var(--model)"></i>Failure model</span><span><i style="background:var(--run)"></i>Run lens</span><span><i style="background:var(--credit)"></i>Credit lens</span></div><div id="cbank"></div>
+        <figcaption>Percentile among all US banks each quarter; 100 = most fragile. Gaps mean the inputs were missing.</figcaption></figure>
+      <figure><p class="fig-title">Risk profile, ${ql[lastIdx]}</p><div id="cdims"></div>
+        <figcaption>Each dimension is the average percentile of its ratios; 100 = most fragile of all US banks that quarter.</figcaption></figure>
+    </div>
     ${memo ? `<div class="memo"><h4>Analyst memo, ${memo.asof}</h4><p class="note">Written by a Claude agent that saw only anonymized ratios, with no name, place or date. Every number it cites was checked against the data.</p>${memo.html}</div>` : ""}`;
   let vline;
   if (b.f) { const fq = Q.findIndex(q => q >= b.f); vline = { at: fq < 0 ? Q.length - 1 : Math.max(0, fq - 0.5), label: "failed" }; }
   lineChart($("#cbank"), { x: ql, height: 260, zero: false, domain: [0, 100], marker: false, yTitle: "percentile",
     yFmt: (v, tip) => tip ? v + "th pct" : String(v),
-    series: [{ label: "Run", color: css("--run"), values: b.r }, { label: "Credit", color: css("--credit"), values: b.c }, { label: "Model", color: css("--model"), values: b.m, dash: "5 4" }], vline });
+    series: [{ label: "Failure", color: css("--model"), values: b.m }, { label: "Run", color: css("--run"), values: b.r }, { label: "Credit", color: css("--credit"), values: b.c }], vline });
+  dimBars($("#cdims"), BANKS.dimensions.map((name, i) => ({ name, v: b[`d${i}`][lastIdx] })));
   document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(+c.dataset.id === b.id)));
+}
+// Horizontal bars on a fixed 0-100 percentile scale, one per risk dimension.
+function dimBars(host, dims) {
+  host.innerHTML = "";
+  const W = 640, row = 30, m = { t: 6, r: 44, b: 26, l: 190 }, H = m.t + m.b + row * dims.length;
+  const X = v => m.l + (W - m.l - m.r) * v / 100;
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Risk profile by dimension" }, host);
+  [0, 25, 50, 75, 100].forEach(t => {
+    svgEl("line", { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b, stroke: t === 50 ? css("--axis") : css("--rule") }, svg);
+    const tx = svgEl("text", { x: X(t), y: H - m.b + 16, "text-anchor": "middle" }, svg); tx.textContent = t === 50 ? "50 median" : t;
+  });
+  dims.forEach((d, i) => {
+    const y = m.t + row * i;
+    const lt = svgEl("text", { x: m.l - 10, y: y + row / 2 + 4, "text-anchor": "end", style: `fill:${css("--ink-2")};font-family:var(--font-body);font-size:12px` }, svg);
+    lt.textContent = d.name;
+    if (d.v == null) { const n = svgEl("text", { x: X(0) + 6, y: y + row / 2 + 4 }, svg); n.textContent = "not reported"; return; }
+    const hot = d.v >= 80;
+    svgEl("rect", { x: X(0), y: y + 7, width: Math.max(2, X(d.v) - X(0)), height: row - 14, rx: 3, fill: hot ? css("--fail") : css("--ink-2"), "fill-opacity": hot ? 0.85 : 0.45 }, svg);
+    const vt = svgEl("text", { x: X(d.v) + 6, y: y + row / 2 + 4, style: `fill:${css("--ink")}` }, svg); vt.textContent = d.v;
+  });
 }
 function setupLookup() {
   const byId = new Map(BANKS.banks.map(b => [b.id, b]));
@@ -432,6 +527,11 @@ function drawAll() {
   const t3 = DATA.results.T3_placebo_2019;
   $("#cap2019").textContent = `${t3.n.toLocaleString()} banks. With no panic, run-lens decile says nothing about deposit moves: ρ ${t3.run.rho.toFixed(3)} (95% CI ${t3.ci95.run.join(" to ")}).`;
   scatter($("#cscatter"), DATA.scatter);
+  const v = DATA.v3;
+  aucChart($("#cv3e1"), v.e1);
+  $("#capv3e1").textContent = `${v.e1_n[0].toLocaleString()} banks scored on their December 2007 reports; ${v.e1_n[1]} failed by the end of 2011. The model never saw a year after 2006. The comprehensive model's riskiest 5% held ${(v.e1_recall5.F_A_mono * 100).toFixed(0)}% of failures; its safest tenth had a failure rate of ${v.e1_deciles.model[0].toFixed(1)}%, against ${v.e1_deciles.credit[0].toFixed(1)}% for the Texas ratio's safest tenth.`;
+  aucChart($("#cv3e3"), v.e3);
+  $("#capv3e3").textContent = `${v.e3_n[0].toLocaleString()} banks scored on December 2022 reports. ${v.e3_n[1]} either failed or borrowed at least 1% of assets from the Fed's emergency facilities between 13 March and 31 May 2023. The learned run model ranks them worse than chance; in a calm 2019 placebo the same model scored ${v.e4_auc.toFixed(2)}.`;
   if (BANKS) { const cur = document.querySelector('.chip[aria-pressed="true"]'); if (cur) bankView(BANKS.banks.find(b => b.id === +cur.dataset.id)); }
 }
 ["#b-all", "#b-big"].forEach((id, i) => $(id).addEventListener("click", () => {

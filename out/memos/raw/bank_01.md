@@ -1,0 +1,12 @@
+# Bank 01: supervisory memo
+
+**Dominant risks: losses and securities-driven capital erosion.** The failure model is 0.999 in all three quarters. ROA was -7.04%, -4.73% and -3.53% (T-2 to T), at the 0.5th percentile, with NIM of 1.23%. Unrealized securities losses equal 133% of Tier 1 (99.4th percentile) and long-dated assets 4.9x Tier 1. Book equity/assets went from 2.05% to -2.08% to -1.85%; mark-to-market capital from 1.17% to -3.16% to -3.55%.
+
+**Data that need checking.** Negative book equity sits beside a reported leverage ratio of 11.31% and Tier 1 risk-based ratio of 35.34%; this gap should be reconciled. The credit lens reads 1.0 while the Texas ratio is only 0.88% (39.7th percentile), so the lens and its own input disagree. Loans are only 9.6% of deposits, so the 68% loan growth and the rise in CRE to 18% of capital start from a small base.
+
+**Model disagreement.** The run lens is mid-range (0.52-0.53): uninsured deposits are 16%, the liquid-asset ratio is 88% and the run gap only 0.19. The failure model is reacting to losses and capital, not to deposit flight, and here it is the more relevant signal.
+
+**Questions**
+1. What drives the continuing losses, and what is the plan to restore positive earnings?
+2. How does the bank reconcile negative book equity with an 11.31% leverage ratio, and can it hold its securities to maturity?
+3. Why did brokered deposits (4.8%) and swaps (4.8% of assets) appear this quarter, and what is behind the 68% loan growth?

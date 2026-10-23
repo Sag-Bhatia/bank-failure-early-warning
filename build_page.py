@@ -9,6 +9,7 @@ import pandas as pd
 
 from backtest import OUT
 from features import failures
+from features_v3 import DIMENSIONS
 from fetch import DATA
 from lenses import history
 
@@ -42,14 +43,42 @@ def story():
                     "named": [{"name": named[c], "x": round(r.mtm_cap * 100, 2), "y": round(r.run_gap, 3)}
                               for c, r in sc.set_index("CERT").iterrows() if c in named]},
         "v1": json.loads(pd.read_csv(OUT / "metrics.csv").to_json(orient="records")),
+        "v3": v3_story(),
+    }
+
+
+def v3_story():
+    res = {t: json.loads((OUT / t / "results.json").read_text()) for t in ("v3", "v3_v31")}
+    r = res["v3_v31"]
+    e1 = pd.read_parquet(OUT / "v3_v31" / "e1.parquet")
+    import evaluate_v3  # re-score with the hash-checked frozen v3.1 model
+    evaluate_v3.MODELS = Path(__file__).parent / "models_v3_v31"
+    frozen = json.loads((Path(__file__).parent / "frozen_v3_v31.json").read_text())
+    e1["F_A_mono"] = evaluate_v3.score(e1, "F_A", frozen)["F_A_mono"]
+    e1["fail_pct"] = e1.y * 100
+    e1["F_A_pct"] = e1.F_A_mono.rank(pct=True)
+    pick = lambda block, keys: [{"key": k, "auc": block["auc"][k], "ci": block["ci95"]["auc"][k]} for k in keys]
+    return {
+        "e1": pick(r["E1_2008"], ["F_A_mono", "F_A_logit", "v2_credit", "F_A_unc", "v2_run"]),
+        "e1_n": [r["E1_2008"]["n"], r["E1_2008"]["failures"]],
+        "e1_recall5": r["E1_2008"]["recall5"],
+        "e1_deciles": {"model": deciles(e1, "F_A_pct", "fail_pct", "mean"), "credit": deciles(e1, "v2_credit", "fail_pct", "mean")},
+        "e3": pick(r["E3_2023_O1_fed_borrowing"], ["v2_run", "F_B_mono", "v2_credit", "R_logit", "R_mono", "R_unc"]),
+        "e3_n": [r["E3_2023_O1_fed_borrowing"]["n"], r["E3_2023_O1_fed_borrowing"]["positives"]],
+        "e4_auc": r["E4_2019_placebo"]["R_mono_auc"],
+        "e2": r["E2_2019_2024"],
+        "hypotheses": r["hypotheses"],
+        "original_v3": {"e1_F_A_mono": res["v3"]["E1_2008"]["auc"]["F_A_mono"],
+                        "e3_R_mono": res["v3"]["E3_2023_O1_fed_borrowing"]["auc"]["R_mono"]},
     }
 
 
 def banks():
     h = history()
     h = h[h.repdte <= "2024-12-31"]
-    sc = pd.read_parquet(OUT / "scores.parquet")[["CERT", "repdte", "pct_logit_B"]]
-    h = h.merge(sc, on=["CERT", "repdte"], how="left")
+    v3 = pd.read_parquet(OUT / "v3_v31" / "e2.parquet")
+    v3["fm"] = v3.groupby("repdte").F_B_mono.rank(pct=True)
+    h = h.merge(v3[["CERT", "repdte", "fm", *DIMENSIONS]], on=["CERT", "repdte"], how="left")
     qs = sorted(h.repdte.unique())
     qi = {q: i for i, q in enumerate(qs)}
     fails = failures().set_index("CERT").faildate
@@ -57,16 +86,16 @@ def banks():
     for cert, g in h.groupby("CERT"):
         last = g.loc[g.repdte.idxmax()]
         series = {}
-        for col, key in (("run", "r"), ("credit", "c"), ("pct_logit_B", "m")):
+        for col, key in (("run", "r"), ("credit", "c"), ("fm", "m"), *((dim, f"d{i}") for i, dim in enumerate(DIMENSIONS))):
             arr = [None] * len(qs)
             for q, v in zip(g.repdte, g[col]):
                 if pd.notna(v):
-                    arr[qi[q]] = int(round((1 - v if col == "pct_logit_B" else v) * 100))
+                    arr[qi[q]] = int(round(v * 100))
             series[key] = arr
         fd = fails.get(float(cert))
         out.append({"id": int(cert), "n": last.NAME.title(), "p": f"{last.CITY.title()}, {last.STALP}",
                     "a": int(last.ASSET), "f": str(fd.date()) if pd.notna(fd) and fd.year >= 2019 else None, **series})
-    return {"quarters": [str(pd.Timestamp(q).date()) for q in qs], "banks": out}
+    return {"quarters": [str(pd.Timestamp(q).date()) for q in qs], "dimensions": list(DIMENSIONS), "banks": out}
 
 
 def md_html(md):
@@ -101,9 +130,18 @@ def memos():
             for n, k in key.items()}
 
 
+def clean(x):
+    """Browsers reject NaN in JSON; Python writes it. Map NaN to null."""
+    if isinstance(x, dict):
+        return {k: clean(v) for k, v in x.items()}
+    if isinstance(x, list):
+        return [clean(v) for v in x]
+    return None if isinstance(x, float) and x != x else x
+
+
 if __name__ == "__main__":
     PAGE.mkdir(exist_ok=True)
-    (PAGE / "data.json").write_text(json.dumps(story(), separators=(",", ":")))
+    (PAGE / "data.json").write_text(json.dumps(clean(story()), separators=(",", ":"), allow_nan=False))
     (PAGE / "banks.json").write_text(json.dumps(banks(), separators=(",", ":")))
     (PAGE / "memos.json").write_text(json.dumps(memos(), separators=(",", ":")))
     for f in ("data.json", "banks.json", "memos.json"):
