@@ -40,6 +40,23 @@ An early-warning system for US bank failures, built from public call reports for
 - So the model learned "small bank". Its scores correlate −0.78 with size and −0.06 with the run lens.
 - A size-adjusted label might work, but designing it after seeing 2023 and re-testing on 2023 is hindsight. It is left as future work for a genuinely new episode.
 
+**v4, improvements tested only on untouched data ([PREREG_v4.md](PREREG_v4.md)).** New: trajectory features, state unemployment and house prices, and a size-relative run label. Each model's feature blocks were chosen by leave-one-era-out CV inside its own training years.
+
+| Clean pool | Result | Hypothesis |
+|---|---|---|
+| **P1.** Early-1990s crisis, tested backward (trained 1995–2018; 15,382 banks, 474 failures) | AUC **0.92 vs 0.89** for the Texas ratio; PR-AUC 0.48 vs 0.29 | H5 **supported**. Regional block vs base: AUC +0.000–0.005, PR-AUC +0.03–0.06 |
+| **P2.** 2008 deposit runs (2007–09 left out of training; 16,725 bank-quarters) | ρ **0.19** (new label) vs 0.08 (old label) vs 0.10 (run lens) | H7 and H8 **supported**. Banks ≥$1B: no gain over the old label; the credit lens is best (0.18) |
+| **P3.** Prospective 2026 failures, scored on 2025Q3 | All 3 never-scored failures in the **top 0.5%** and flagged by the combination rule. 4.2 failures expected in 12 months; 4 observed with about 11 months elapsed | Descriptive (n = 3) |
+| **Secondary.** 2023 Fed borrowing (seen before) | New run model 0.52 vs run lens 0.63 | The lens still wins |
+| **Secondary.** 2019–2024 combination rule | **14 of 18** caught at a 9.3% flag rate (model alone 12, lens alone 8, at the same flag count) | — |
+
+**Void, reported as such:** the 1990 combination-rule line, because the run lens needs securities values first reported in 1994.
+
+**Dropped:**
+- enforcement actions (no bulk download exists);
+- deposit-franchise value;
+- multi-horizon models.
+
 ## Bugs found after the v3 results, and the v3.1 re-run
 1. **`efficiency` used the dollar numerator (EEFF)** instead of the ratio (EEFF/IEFF).
 2. **`tier1_rbc` read 0 when not reported.** That covers every bank before 1990, and about 37% of banks from 2020 (community-bank-leverage-ratio electors). The constrained model treated those banks as having no capital.

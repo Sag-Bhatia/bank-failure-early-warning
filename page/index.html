@@ -113,7 +113,7 @@ code { font-family: var(--font-data); font-size: .9em; }
 
 <main>
   <header>
-    <p class="eyebrow">US call reports · 1985–2024 · FDIC, Federal Reserve and FRED data</p>
+    <p class="eyebrow">US call reports · 1985–2026 · FDIC, Federal Reserve and FRED data</p>
     <h1>Two ways banks fail</h1>
     <p class="lede">Banks die slowly from bad loans, or quickly from a run on uninsured deposits. A screen built for one kind is nearly blind to the other. I tested two simple screens on every US bank, through the 2008 crisis and the 2023 panic, with the rules written down before any outcome was computed.</p>
     <p class="lede"><span class="lens-key"><i style="background:var(--credit)"></i>Credit lens</span>: problem loans against capital (the Texas ratio). <span class="lens-key"><i style="background:var(--run)"></i>Run lens</span>: capital after unrealized securities losses, plus uninsured deposits per dollar of liquid assets. Neither lens has a single fitted parameter.</p>
@@ -196,6 +196,35 @@ code { font-family: var(--font-data); font-size: .9em; }
     </div>
   </section>
 
+  <section aria-labelledby="sv4">
+    <div class="prose">
+      <h2 id="sv4">v4: improvements, tested only on data never touched</h2>
+      <p>2008 and 2023 had been used, so any change judged on them would be tuning to the test. v4 added three things suggested by the earlier findings:</p>
+      <ul>
+        <li><strong>Trajectory:</strong> four-quarter changes in capital, problem loans, earnings, uninsured deposits and liquidity.</li>
+        <li><strong>Regional conditions:</strong> state unemployment and house prices.</li>
+        <li><strong>A size-fair run label:</strong> the worst 5% of deposit changes among banks of the same size.</li>
+      </ul>
+      <p>Cross-validation inside each model's own training years chose which additions to keep. The results come from three pools no version had seen: the early-1990s crisis tested backward, the 2008 deposit runs, and the failures of 2026.</p>
+    </div>
+    <div class="two-col">
+      <figure>
+        <p class="fig-title">Early-1990s failures, tested backward: AUC with 95% interval</p>
+        <div id="cv4p1"></div>
+        <figcaption id="capv4p1"></figcaption>
+      </figure>
+      <figure>
+        <p class="fig-title">2008 deposit runs: rank correlation with 95% interval</p>
+        <div id="cv4p2"></div>
+        <figcaption id="capv4p2"></figcaption>
+      </figure>
+    </div>
+    <div class="prose">
+      <p><strong>The run label was the problem.</strong> Comparing each bank only with banks of its own size turned the learned run model from the weakest signal into the strongest on the 2008 runs. On the 2023 Fed-borrowing test it improved from 0.42 to 0.52, but the run lens still won there with 0.63. 2023 had already been seen, so that is a secondary check. Among large banks in 2008, credit weakness predicted deposit flight best: those runs were on banks the market already thought were insolvent.</p>
+      <p><strong>The 2026 test.</strong> The production model was trained through mid-2024 and scored on September 2025 reports, before three banks failed between May and July 2026: Community Bank &amp; Trust–West Georgia, Kentland Federal Savings, and Small Business Bank. All three ranked in its riskiest 0.5%. Its calibrated probabilities summed to 4.2 expected failures in the following year; 4 had happened with about 11 months elapsed. Three failures is a small test, so treat this as encouraging, not proof.</p>
+    </div>
+  </section>
+
   <section aria-labelledby="sscatter">
     <div class="prose">
       <h2 id="sscatter">Where the 2023 failures sat</h2>
@@ -247,6 +276,7 @@ code { font-family: var(--font-data); font-size: .9em; }
       <div><h3>Analyst memos, checked</h3><p>A Claude agent wrote each memo blind, from anonymized numbers only. A script then checked all 492 numbers the current memos cite; every one appears in the source data.</p></div>
       <div><h3>A flaw the memos caught</h3><p>The blind analyst noticed that five of the credit lens's top banks for 2022 had negative book equity but healthy regulatory capital. Securities losses run through book equity, which the Texas ratio uses. So in 2022 the credit lens partly measured rate losses, not bad loans. The results above are left as preregistered; the comprehensive model uses regulatory capital instead.</p></div>
       <div><h3>Two bugs, both runs shown</h3><p>After the comprehensive model's results were in, I found two unit errors. The "efficiency" input was a dollar amount, not a ratio. And banks that do not report risk-based capital (all banks before 1990, and 37% from 2020) read as having zero capital. I fixed both, changed nothing else, and re-ran. Every conclusion held to two decimals. Both versions are committed.</p></div>
+      <div><h3>What v4 could not test</h3><p>Enforcement actions would have added thousands of distress events, but the regulators publish them only through interactive search sites. The two-signal rule could not be tested on 1990, because the run lens needs securities values first reported in 1994; that line is reported as void. Deposit-franchise value and multi-horizon models were left out.</p></div>
       <div><h3>Outcomes no one had looked at</h3><p>The 2023 test of the comprehensive model uses Federal Reserve emergency-loan records, the BTFP and discount-window loans, matched to banks. No earlier version of this project had touched them.</p></div>
     </div>
   </section>
@@ -390,13 +420,15 @@ function scatter(host, S) {
 }
 
 function findings(D) {
-  const r = D.results, t1 = r.T1_2023_uninsured, t2 = r.T2_2008_failures, v = D.v3;
-  const a = k => v.e1.find(x => x.key === k).auc, b = k => v.e3.find(x => x.key === k).auc;
+  const v = D.v3, w = D.v4;
+  const a = k => v.e1.find(x => x.key === k).auc, p1 = k => w.p1.find(x => x.key === k).auc, p2 = k => w.p2.find(x => x.key === k).auc;
+  const pct = x => (x * 100).toFixed(1);
+  const n3 = w.p3.never_scored_failures;
   const items = [
-    ["2008, never seen in training", "Comprehensive model beat the Texas ratio", `AUC ${a("F_A_mono").toFixed(2)} vs ${a("v2_credit").toFixed(2)} · trained on 1986–2006 only · ${v.e1_n[1]} failures`],
-    ["Theory as a constraint", "Direction rules added +0.06 AUC", `Same model unconstrained: ${a("F_A_unc").toFixed(2)} · constrained: ${a("F_A_mono").toFixed(2)}`],
-    ["2023 panic", "A three-ratio run lens beat every learned model", `Fed emergency borrowers: AUC ${b("v2_run").toFixed(2)} vs learned run model ${b("R_mono").toFixed(2)}`],
-    ["2023 deposits", "Run lens predicted uninsured flight", `ρ ${t1.run.rho.toFixed(2)} vs credit lens ${t1.credit.rho.toFixed(2)} · ${t1.n.toLocaleString()} banks`],
+    ["2026 failures, scored in 2025", `All ${n3.length} new failures were in the riskiest 0.5%`, `Percentiles ${n3.map(f => pct(f.F4_prod_pct)).join(", ")} · ${w.p3.expected_failures_next_12m} failures expected, ${w.p3.observed_so_far} so far`],
+    ["Crises never used in training", "Beat the Texas ratio in 2008 and the early 1990s", `2008: AUC ${a("F_A_mono").toFixed(2)} vs ${a("v2_credit").toFixed(2)} · 1990s: ${p1("F4_back").toFixed(2)} vs ${p1("credit").toFixed(2)}`],
+    ["2008 deposit runs", "Fixing the run label doubled its signal", `ρ ${p2("R4").toFixed(2)} vs old label ${p2("R3x").toFixed(2)} and run lens ${p2("run").toFixed(2)}`],
+    ["Two signals together", `Caught ${w.combo.caught_either} of ${w.combo.failed_banks} failures, 2019–2024`, `Failure model or run lens in its top 5% · flags ${pct(w.combo.mean_flag_rate)}% of banks · model alone ${w.combo.caught_f_topk}`],
   ];
   $("#findings").innerHTML = items.map(([w, h, n]) => `<div class="finding"><span class="when">${w}</span><span class="what">${h}</span><span class="num">${n}</span></div>`).join("");
 }
@@ -405,28 +437,31 @@ const SCORE_NAMES = {
   F_A_mono: "Comprehensive model", F_A_logit: "Same inputs, logistic", F_A_unc: "Same inputs, no direction rules",
   v2_credit: "Credit lens (Texas ratio)", v2_run: "Run lens", F_B_mono: "Comprehensive failure model",
   R_mono: "Learned run model", R_logit: "Learned run model, logistic", R_unc: "Learned run model, no rules",
+  F4_back: "v4 model (+ regional)", F4_back_base: "Same model, base inputs", credit: "Credit lens (Texas ratio)", run: "Run lens",
+  R4: "v4 run model (peer-relative label)", R4_base: "Same, without trajectory", R3x: "Run model, old label",
 };
-// Dot-and-interval chart of AUCs; 0.5 = no better than chance.
-function aucChart(host, items) {
+// Dot-and-interval chart (AUC by default; 0.5 = no better than chance).
+function aucChart(host, items, opt = {}) {
   host.innerHTML = "";
+  const { lo = 0.35, hi = 0.85, ticks = [0.4, 0.5, 0.6, 0.7, 0.8], ref = 0.5, refLabel = "0.5 chance", metric = "AUC" } = opt;
   const W = 640, row = 30, m = { t: 8, r: 24, b: 30, l: 250 }, H = m.t + m.b + row * items.length;
-  const lo = 0.35, hi = 0.85, X = v => m.l + (W - m.l - m.r) * (v - lo) / (hi - lo);
+  const X = v => m.l + (W - m.l - m.r) * (v - lo) / (hi - lo);
   const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "AUC by score with 95% intervals" }, host);
-  [0.4, 0.5, 0.6, 0.7, 0.8].forEach(t => {
-    svgEl("line", { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b, stroke: t === 0.5 ? css("--axis") : css("--rule"), "stroke-width": t === 0.5 ? 1.5 : 1 }, svg);
-    const tx = svgEl("text", { x: X(t), y: H - m.b + 16, "text-anchor": "middle" }, svg); tx.textContent = t === 0.5 ? "0.5 chance" : t.toFixed(1);
+  ticks.forEach(t => {
+    svgEl("line", { x1: X(t), x2: X(t), y1: m.t, y2: H - m.b, stroke: t === ref ? css("--axis") : css("--rule"), "stroke-width": t === ref ? 1.5 : 1 }, svg);
+    const tx = svgEl("text", { x: X(t), y: H - m.b + 16, "text-anchor": "middle" }, svg); tx.textContent = t === ref ? refLabel : String(t);
   });
   const fig = host.closest("figure"), tip = tipFor(fig);
   items.forEach((it, i) => {
-    const y = m.t + row * i + row / 2, lens = it.key.startsWith("v2_");
-    const color = it.key === "v2_run" ? css("--run") : it.key === "v2_credit" ? css("--credit") : css("--ink");
+    const y = m.t + row * i + row / 2, k = it.key.replace("v2_", ""), lens = k === "run" || k === "credit";
+    const color = k === "run" ? css("--run") : k === "credit" ? css("--credit") : css("--ink");
     const lt = svgEl("text", { x: m.l - 12, y: y + 4, "text-anchor": "end", style: `fill:${css("--ink-2")};font-family:var(--font-body);font-size:12px;font-weight:${i === 0 ? 600 : 400}` }, svg);
     lt.textContent = SCORE_NAMES[it.key] || it.key;
     svgEl("line", { x1: X(it.ci[0]), x2: X(it.ci[1]), y1: y, y2: y, stroke: color, "stroke-width": 2, "stroke-linecap": "round" }, svg);
     svgEl("circle", { cx: X(it.auc), cy: y, r: 5, fill: lens ? color : css("--ink"), stroke: css("--surface"), "stroke-width": 2 }, svg);
     const vt = svgEl("text", { x: X(it.ci[1]) + 8, y: y + 4 }, svg); vt.textContent = it.auc.toFixed(2);
     const hit = svgEl("rect", { x: 0, y: y - row / 2, width: W, height: row, fill: "transparent" }, svg);
-    hit.addEventListener("mousemove", ev => placeTip(tip, fig, ev, `<b>${SCORE_NAMES[it.key]}</b><br>AUC ${it.auc.toFixed(3)}<br>95% interval ${it.ci[0]} to ${it.ci[1]}`));
+    hit.addEventListener("mousemove", ev => placeTip(tip, fig, ev, `<b>${SCORE_NAMES[it.key]}</b><br>${metric} ${it.auc.toFixed(3)}<br>95% interval ${it.ci[0]} to ${it.ci[1]}`));
     hit.addEventListener("mouseleave", () => tip.hidden = true);
   });
 }
@@ -531,6 +566,11 @@ function drawAll() {
   aucChart($("#cv3e1"), v.e1);
   $("#capv3e1").textContent = `${v.e1_n[0].toLocaleString()} banks scored on their December 2007 reports; ${v.e1_n[1]} failed by the end of 2011. The model never saw a year after 2006. The comprehensive model's riskiest 5% held ${(v.e1_recall5.F_A_mono * 100).toFixed(0)}% of failures; its safest tenth had a failure rate of ${v.e1_deciles.model[0].toFixed(1)}%, against ${v.e1_deciles.credit[0].toFixed(1)}% for the Texas ratio's safest tenth.`;
   aucChart($("#cv3e3"), v.e3);
+  const w = DATA.v4;
+  aucChart($("#cv4p1"), w.p1, { lo: 0.85, hi: 0.95, ticks: [0.86, 0.88, 0.9, 0.92, 0.94], ref: null });
+  $("#capv4p1").textContent = `${w.p1_n[0].toLocaleString()} banks scored on December 1990 reports; ${w.p1_n[1]} failed 1991–94. These models were trained on 1995–2018 only. Precision-recall AUC: v4 ${w.p1_pr.F4_back.toFixed(2)}, base inputs ${w.p1_pr.F4_back_base.toFixed(2)}, Texas ratio ${w.p1_pr.credit.toFixed(2)}.`;
+  aucChart($("#cv4p2"), w.p2, { lo: 0, hi: 0.25, ticks: [0, 0.05, 0.1, 0.15, 0.2, 0.25], ref: 0, refLabel: "0 none", metric: "ρ" });
+  $("#capv4p2").textContent = `Rank correlation with uninsured-deposit loss in 2008 Q2 and Q3, ${w.p2_n.toLocaleString()} bank-quarters. The run models left 2007–2009 out of training. Among banks over $1B the picture differs: v4 ${w.p2_big.R4.toFixed(2)}, old label ${w.p2_big.R3x.toFixed(2)}, run lens ${w.p2_big.run.toFixed(2)}, credit lens ${w.p2_big.credit.toFixed(2)}.`;
   $("#capv3e3").textContent = `${v.e3_n[0].toLocaleString()} banks scored on December 2022 reports. ${v.e3_n[1]} either failed or borrowed at least 1% of assets from the Fed's emergency facilities between 13 March and 31 May 2023. The learned run model ranks them worse than chance; in a calm 2019 placebo the same model scored ${v.e4_auc.toFixed(2)}.`;
   if (BANKS) { const cur = document.querySelector('.chip[aria-pressed="true"]'); if (cur) bankView(BANKS.banks.find(b => b.id === +cur.dataset.id)); }
 }

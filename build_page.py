@@ -44,6 +44,24 @@ def story():
                               for c, r in sc.set_index("CERT").iterrows() if c in named]},
         "v1": json.loads(pd.read_csv(OUT / "metrics.csv").to_json(orient="records")),
         "v3": v3_story(),
+        "v4": v4_story(),
+    }
+
+
+def v4_story():
+    r = json.loads((OUT / "v4" / "results.json").read_text())
+    p1, p2 = r["P1_1990s_backward"], r["P2_2008_runs"]
+    pick = lambda block, metric, keys: [{"key": k, "auc": block[metric][k], "ci": block["ci95"][metric][k]} for k in keys]
+    return {
+        "p1": pick(p1, "auc", ["F4_back", "F4_back_base", "credit"]), "p1_n": [p1["n"], p1["failures"]],
+        "p1_pr": {k: p1["pr_auc"][k] for k in ("F4_back", "F4_back_base", "credit")},
+        "p2": pick(p2, "rho", ["R4", "R4_base", "credit", "run", "R3x"]), "p2_n": p2["n"],
+        "p2_big": {k: r["P2_2008_runs_1B_plus"]["rho"][k] for k in ("R4", "R3x", "run", "credit")},
+        "o1": r["SECONDARY_2023_O1_contaminated"],
+        "combo": r["SECONDARY_2019_2024_combination"],
+        "p3": r["P3_prospective"],
+        "cv": {m: r["cv"][m]["chosen"] for m in r["cv"]},
+        "hypotheses": r["hypotheses"],
     }
 
 
