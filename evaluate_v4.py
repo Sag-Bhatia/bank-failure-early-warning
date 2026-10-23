@@ -29,7 +29,8 @@ def score(df, name):
 
 
 def with_lenses(rows, repdte):
-    return rows.merge(v2_lenses(repdte), on="CERT", how="left")
+    lz = v2_lenses(repdte).rename(columns={"v2_run": "run", "v2_credit": "credit"})
+    return rows.merge(lz, on="CERT", how="left")
 
 
 def top(s, share=0.05):

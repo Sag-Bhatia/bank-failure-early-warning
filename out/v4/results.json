@@ -1,0 +1,372 @@
+{
+  "cv": {
+    "F4_back": {
+      "chosen": "base+G",
+      "table": {
+        "base": {
+          "mean_auc": 0.9364,
+          "era_aucs": [
+            0.9367,
+            0.8624,
+            0.9753,
+            0.9713
+          ]
+        },
+        "base+T": {
+          "mean_auc": 0.9385,
+          "era_aucs": [
+            0.94,
+            0.865,
+            0.9761,
+            0.973
+          ]
+        },
+        "base+G": {
+          "mean_auc": 0.9458,
+          "era_aucs": [
+            0.9406,
+            0.889,
+            0.976,
+            0.9775
+          ]
+        },
+        "base+T+G": {
+          "mean_auc": 0.9462,
+          "era_aucs": [
+            0.9407,
+            0.8888,
+            0.9785,
+            0.9767
+          ]
+        }
+      }
+    },
+    "F4_prod": {
+      "chosen": "base+T",
+      "table": {
+        "base": {
+          "mean_auc": 0.9478,
+          "era_aucs": [
+            0.9299,
+            0.9805,
+            0.8911,
+            0.9793,
+            0.9583
+          ]
+        },
+        "base+T": {
+          "mean_auc": 0.9504,
+          "era_aucs": [
+            0.9414,
+            0.9796,
+            0.8916,
+            0.9808,
+            0.9588
+          ]
+        },
+        "base+G": {
+          "mean_auc": 0.9463,
+          "era_aucs": [
+            0.9227,
+            0.9815,
+            0.8926,
+            0.9798,
+            0.955
+          ]
+        },
+        "base+T+G": {
+          "mean_auc": 0.9485,
+          "era_aucs": [
+            0.9301,
+            0.982,
+            0.8946,
+            0.9813,
+            0.9545
+          ]
+        }
+      }
+    },
+    "R4": {
+      "chosen": "base+T",
+      "table": {
+        "base": {
+          "mean_auc": 0.6198,
+          "era_aucs": [
+            0.6203,
+            0.6024,
+            0.6471,
+            0.6092
+          ]
+        },
+        "base+T": {
+          "mean_auc": 0.6673,
+          "era_aucs": [
+            0.6929,
+            0.6607,
+            0.6701,
+            0.6456
+          ]
+        },
+        "base+G": {
+          "mean_auc": 0.6199,
+          "era_aucs": [
+            0.6207,
+            0.603,
+            0.6474,
+            0.6085
+          ]
+        },
+        "base+T+G": {
+          "mean_auc": 0.6676,
+          "era_aucs": [
+            0.6904,
+            0.6612,
+            0.6712,
+            0.6477
+          ]
+        }
+      }
+    }
+  },
+  "P1_1990s_backward": {
+    "n": 15382,
+    "failures": 474,
+    "auc": {
+      "F4_back": 0.9204,
+      "F4_back_base": 0.918,
+      "credit": 0.8909
+    },
+    "recall5": {
+      "F4_back": 0.6603,
+      "F4_back_base": 0.6477,
+      "credit": 0.6266
+    },
+    "pr_auc": {
+      "F4_back": 0.4782,
+      "F4_back_base": 0.435,
+      "credit": 0.2877
+    },
+    "ci95": {
+      "auc": {
+        "F4_back": [
+          0.905,
+          0.935
+        ],
+        "F4_back_base": [
+          0.902,
+          0.933
+        ],
+        "credit": [
+          0.872,
+          0.909
+        ],
+        "F4_back - credit": [
+          0.019,
+          0.042
+        ],
+        "F4_back - F4_back_base": [
+          0.0,
+          0.005
+        ]
+      },
+      "recall5": {
+        "F4_back": [
+          0.622,
+          0.702
+        ],
+        "F4_back_base": [
+          0.607,
+          0.687
+        ],
+        "credit": [
+          0.581,
+          0.666
+        ],
+        "F4_back - credit": [
+          0.004,
+          0.073
+        ],
+        "F4_back - F4_back_base": [
+          -0.009,
+          0.034
+        ]
+      },
+      "pr_auc": {
+        "F4_back": [
+          0.428,
+          0.526
+        ],
+        "F4_back_base": [
+          0.388,
+          0.482
+        ],
+        "credit": [
+          0.257,
+          0.323
+        ],
+        "F4_back - credit": [
+          0.153,
+          0.227
+        ],
+        "F4_back - F4_back_base": [
+          0.028,
+          0.059
+        ]
+      }
+    }
+  },
+  "P1_combination": {
+    "flagged": 15382,
+    "run_lens_available_share": 0.0,
+    "caught_either": 474,
+    "caught_F4_back_topk": 474,
+    "caught_credit_topk": 474
+  },
+  "P2_2008_runs": {
+    "n": 16725,
+    "by_quarter_n": {
+      "2008Q2": 8396,
+      "2008Q3": 8329
+    },
+    "rho": {
+      "R4": 0.1884,
+      "R4_base": 0.1448,
+      "R3x": 0.081,
+      "run": 0.1009,
+      "credit": 0.1154
+    },
+    "ci95": {
+      "rho": {
+        "R4": [
+          0.173,
+          0.204
+        ],
+        "R4_base": [
+          0.129,
+          0.162
+        ],
+        "R3x": [
+          0.065,
+          0.096
+        ],
+        "run": [
+          0.086,
+          0.117
+        ],
+        "credit": [
+          0.101,
+          0.131
+        ],
+        "R4 - R3x": [
+          0.09,
+          0.125
+        ],
+        "R4 - run": [
+          0.069,
+          0.105
+        ]
+      }
+    }
+  },
+  "P2_2008_runs_1B_plus": {
+    "n": 1321,
+    "rho": {
+      "R4": 0.15,
+      "R4_base": 0.1539,
+      "R3x": 0.1637,
+      "run": 0.0607,
+      "credit": 0.1805
+    },
+    "ci95": {
+      "rho": {
+        "R4": [
+          0.093,
+          0.2
+        ],
+        "R4_base": [
+          0.101,
+          0.21
+        ],
+        "R3x": [
+          0.109,
+          0.22
+        ],
+        "run": [
+          0.003,
+          0.115
+        ],
+        "credit": [
+          0.128,
+          0.234
+        ],
+        "R4 - R3x": [
+          -0.05,
+          0.022
+        ],
+        "R4 - run": [
+          0.01,
+          0.163
+        ]
+      }
+    }
+  },
+  "SECONDARY_2023_O1_contaminated": {
+    "n": 4702,
+    "R4_auc": 0.5246,
+    "v2_run_auc": 0.6299
+  },
+  "SECONDARY_2019_2024_combination": {
+    "failed_banks": 18,
+    "mean_flag_rate": 0.093,
+    "caught_either": 14,
+    "caught_f_topk": 12,
+    "caught_r_topk": 8,
+    "caught_f_top": 11,
+    "caught_r_top": 7
+  },
+  "P3_prospective": {
+    "banks": 4452,
+    "never_scored_failures": [
+      {
+        "NAME": "SMALL BUSINESS BANK",
+        "faildate": "2026-07-17",
+        "F4_prod_pct": 0.9948,
+        "run_pct": 0.4135,
+        "credit_pct": 0.9716,
+        "prob": 0.036,
+        "either": true
+      },
+      {
+        "NAME": "COMMUNITY B&T WEST GEORGIA",
+        "faildate": "2026-05-01",
+        "F4_prod_pct": 0.9975,
+        "run_pct": 0.5842,
+        "credit_pct": 0.9995,
+        "prob": 0.0533,
+        "either": true
+      },
+      {
+        "NAME": "KENTLAND FS&LA",
+        "faildate": "2026-07-10",
+        "F4_prod_pct": 1.0,
+        "run_pct": 0.4616,
+        "credit_pct": 0.9993,
+        "prob": 0.5565,
+        "either": true
+      }
+    ],
+    "expected_failures_next_12m": 4.24,
+    "observed_so_far": 4,
+    "observed_window_note": "public date 2025-11-14 + 365 days; failure list fetched 2026-10-22, so about 11 of 12 months observed",
+    "flag_rate_either": 0.0923
+  },
+  "hypotheses": {
+    "H5_F4_back_beats_credit_1990s": true,
+    "H6_F4_back_minus_base_1990s_ci": [
+      0.0,
+      0.005
+    ],
+    "H7_R4_beats_R3x_2008_runs": true,
+    "H8_R4_beats_run_lens_2008_runs": true
+  }
+}
