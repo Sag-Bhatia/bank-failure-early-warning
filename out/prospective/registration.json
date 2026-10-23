@@ -1,0 +1,10 @@
+{
+  "reports": "2026-06-30",
+  "public_date": "2026-08-14",
+  "banks": 4313,
+  "expected_failures_12m": 4.71,
+  "flagged": 404,
+  "models": "frozen_v4.json (F4_prod + calibrator, R4); run/credit lenses from lenses.py",
+  "sha256": "a1e38c2489ea7ef8d9b42676c8dae3140b856f49e7d9296b3cca762ec2796217",
+  "evaluate": "after 2027-08-14: AUC and recall@5% of failure_prob_12m against FDIC failures dated 2026-08-15..2027-08-14"
+}
