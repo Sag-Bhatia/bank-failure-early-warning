@@ -126,7 +126,7 @@ def main():
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4), sharey=True)
     for ax, (short, g) in zip(axes, rows.groupby("short")):
-        for col, style in [("logit_A", "o-"), ("logit_B", "s-"), ("base_texas", "x--")]:
+        for col, style in [("logit_A", "o-"), ("logit_B", "s-"), ("hgb_B", "^-"), ("base_texas", "x--")]:
             ax.plot(g.repdte, g[col], style, label=col)
         ax.axhline(WATCH * 100, color="red", lw=1, ls=":", label="watchlist cut (top 1%)")
         ax.axvline(g.faildate.iloc[0], color="black", lw=1)

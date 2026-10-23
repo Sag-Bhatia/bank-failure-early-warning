@@ -21,7 +21,8 @@ def payload(rows, peers, model, cols):
     for k, (i, r) in enumerate(rows.iloc[::-1].iterrows()):
         pct = {c: round(float((peers.loc[peers.repdte == r.repdte, c] < r[c]).mean() * 100), 1) for c in cols}
         quarters.append({"quarter": f"T-{k}" if k else "T", "risk_rank_pct": round(r.pct_logit_B * 100, 2),
-                         "values": {c: None if pd.isna(r[c]) else round(float(r[c]), 4) for c in cols},
+                         # exact size would let the LLM recognise a large bank; percentile only for log_assets
+                         "values": {c: None if pd.isna(r[c]) else round(float(r[c]), 4) for c in cols if c != "log_assets"},
                          "peer_percentile": pct, "score_contribution": contrib.loc[i].round(3).to_dict()})
     return quarters
 
