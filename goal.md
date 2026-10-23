@@ -57,3 +57,17 @@ Judging a new idea on any of them again is tuning to the test. So:
 ### Done when
 - The audit findings are fixed, or explicitly declined with a reason.
 - The page is re-checked and republished.
+
+## Status (2026-10-23)
+**Phase 1 is done.** Both loops stopped by the rule, with no idea kept. The v4 models stay final, so no second look at the test pools was needed. The prospective predictions are registered (SHA-256 `a1e38c24…`).
+
+**Phase 2 is done.** The Impeccable critique ran as two isolated assessments: a design review scoring 26/40, and detector plus browser evidence. Fixed:
+- **Charts:** drawn at real pixel width (they had been rendering text at 5–7.6px); shared axes for all AUC charts and for 2023 against its placebo.
+- **Lookup:** a two-signal verdict and a 95 flag line; moved up the page; shareable per-bank links; a fintech search hint and a loading state.
+- **Copy:** plain-language findings in a 2×2 grid; a glossary.
+- **Accessibility:** "Show the numbers" tables under every chart; an ARIA combobox with a live status; 44px targets; escaped search input; descriptive chart labels.
+- **Craft floor:** no eyebrow above the h1, no 3px border-left, mono kept for data only; themed selection, caret, scrollbar and placeholder; label collisions on the scatter; the fragile zone shaded.
+
+**Declined:**
+- An in-page quarter picker for the risk profile: scope, and the latest-report view is the honest default.
+- Hiding the forest plots behind a toggle: they are the evidence, and each now has a data table.

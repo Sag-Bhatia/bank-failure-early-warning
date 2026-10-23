@@ -57,6 +57,23 @@ An early-warning system for US bank failures, built from public call reports for
 - deposit-franchise value;
 - multi-horizon models.
 
+**Improvement loop ([goal.md](goal.md), ledger in [out/iterations/ledger.jsonl](out/iterations/ledger.jsonl)).** After v4 every clean pool had been used. The rules for the loop:
+- ideas are judged only by leave-one-era-out CV inside the training years;
+- an idea is kept only if it gains at least +0.002 (failure model) or +0.005 (run model) **and** improves most eras;
+- the loop stops after two consecutive rounds with nothing kept.
+
+**Result: nothing passed, so v4 is the plateau.**
+
+| Model | Idea | Gain |
+|---|---|---|
+| Failure model | larger leaves | +0.0003 |
+| Run model | larger leaves | +0.0012 |
+| Run model | build-up in large-account share | +0.0010 |
+
+The rule ended the search before the trajectory-extension, funding and regional-retry rounds, and those are untested.
+
+**Final exam, still to come:** [out/prospective/predictions_2026Q2.csv](out/prospective/predictions_2026Q2.csv) scores all 4,313 banks on their June 2026 reports (4.7 failures expected in 12 months). Its SHA-256 is recorded in `registration.json`. Score it after 2027-08-14 against the failures that actually happen.
+
 ## Bugs found after the v3 results, and the v3.1 re-run
 1. **`efficiency` used the dollar numerator (EEFF)** instead of the ratio (EEFF/IEFF).
 2. **`tier1_rbc` read 0 when not reported.** That covers every bank before 1990, and about 37% of banks from 2020 (community-bank-leverage-ratio electors). The constrained model treated those banks as having no capital.
