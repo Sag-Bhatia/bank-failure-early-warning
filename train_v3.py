@@ -21,9 +21,9 @@ HGB = dict(max_iter=300, learning_rate=0.05, max_leaf_nodes=15, min_samples_leaf
            class_weight="balanced", early_stopping=False, random_state=0)
 
 
-def variants():
+def variants(cols):
     return {
-        "mono": HistGradientBoostingClassifier(monotonic_cst=[SIGNS[c] for c in FEATURES], **HGB),
+        "mono": HistGradientBoostingClassifier(monotonic_cst=[SIGNS[c] for c in cols], **HGB),
         "unc": HistGradientBoostingClassifier(**HGB),
         "logit": make_pipeline(SimpleImputer(strategy="median"),
                                QuantileTransformer(output_distribution="normal", n_quantiles=1000, random_state=0),
@@ -51,10 +51,12 @@ def main():
               "run_excluded_outcome_quarters": excluded, "models": {}}
     for name, (rows, label) in sets.items():
         y = rows[label].astype(int)
-        info = {"rows": len(rows), "positives": int(y.sum()),
+        # a column with no values in these rows cannot inform the model (and breaks HGB binning)
+        cols = [c for c in FEATURES if rows[c].notna().any()]
+        info = {"rows": len(rows), "positives": int(y.sum()), "features": cols,
                 "repdte": [str(rows.repdte.min().date()), str(rows.repdte.max().date())]}
-        for v, model in variants().items():
-            model.fit(rows[FEATURES], y)
+        for v, model in variants(cols).items():
+            model.fit(rows[cols], y)
             path = MODELS / f"{name}_{v}.pkl"
             path.write_bytes(pickle.dumps(model))
             info[v] = hashlib.sha256(path.read_bytes()).hexdigest()

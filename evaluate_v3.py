@@ -11,7 +11,6 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from backtest import OUT, bank_level
 from fed_borrowing import borrowing
 from features import failures
-from features_v3 import FEATURES
 from fetch_v3 import V3
 from lenses import lenses
 from train_v3 import MODELS, ROOT
@@ -29,7 +28,8 @@ def load(name, variant, frozen):
 
 
 def score(df, name, frozen):
-    return {f"{name}_{v}": load(name, v, frozen).predict_proba(df[FEATURES])[:, 1] for v in ("mono", "unc", "logit")}
+    cols = frozen["models"][name]["features"]
+    return {f"{name}_{v}": load(name, v, frozen).predict_proba(df[cols])[:, 1] for v in ("mono", "unc", "logit")}
 
 
 def v2_lenses(repdte):
