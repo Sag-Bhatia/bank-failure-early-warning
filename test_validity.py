@@ -56,3 +56,23 @@ def test_named_2023_failures_present():
     names = failures().NAME.str.upper()
     for n in ["SILICON VALLEY BANK", "SIGNATURE BANK", "FIRST REPUBLIC BANK"]:
         assert names.eq(n).any(), n
+
+
+def test_v2_lens_direction_and_flow_rules():
+    from evaluate_v2 import flows
+    from lenses import lenses
+    base = dict(NCLNLS=1.0, ORE=0.0, EQ=100.0, INTAN=0.0, LNATRES=1.0, ASSET=1000.0, SCHA=200.0, SCHF=200.0,
+                SCAF=100.0, CHBAL=100.0, DEPUNINS=100.0, DEP=800.0, SCPLEDGE=0.0, OTHBFHLB=0.0)
+    rows = [dict(base, CERT=1), dict(base, CERT=2, SCHF=120.0, DEPUNINS=700.0), dict(base, CERT=3, NCLNLS=90.0)]
+    fin = pd.DataFrame([dict(r, REPDTE="20221231") for r in rows]
+                       + [dict(base, CERT=1, REPDTE="20230331", DEPUNINS=90.0), dict(base, CERT=3, REPDTE="20230331")])
+    lz = lenses(fin[fin.REPDTE == "20221231"]).set_index("CERT")
+    assert lz.run.idxmax() == 2 and lz.credit.idxmax() == 3
+    extra = fin[["CERT", "REPDTE", "SCPLEDGE", "OTHBFHLB"]]
+    fails = pd.DataFrame({"CERT": [2.0], "faildate": pd.to_datetime(["2023-03-10"])})
+    s = flows(fin.drop(columns=["SCPLEDGE", "OTHBFHLB"]), extra, fails, "20221231", "20230331", "2023-05-15").set_index("CERT")
+    assert s.loc[2, "unins_loss"] == 1.0            # failed before filing -> worst outcome
+    assert s.loc[1, "unins_loss"] == pytest.approx(0.1)
+    fails_none = fails.iloc[:0]
+    s2 = flows(fin.drop(columns=["SCPLEDGE", "OTHBFHLB"]), extra, fails_none, "20221231", "20230331", "2023-05-15")
+    assert 2 not in set(s2.CERT)                     # vanished without failing -> excluded
