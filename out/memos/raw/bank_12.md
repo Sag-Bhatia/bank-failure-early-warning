@@ -1,20 +1,12 @@
-# Bank 12: Supervisory memo
+# Bank 12 – Supervisory memo
 
-**Overall:** High risk. The bank moved from the riskiest 1.5% to 3.6%, and now to 0.21%. It is fairly large (81st size percentile).
+**Data warning: the credit screen is unreliable for T and T-1.** The Texas ratio went from 0.2955 at T-2 to 866 and 680, implausible values that track equity to assets turning negative (0.65%, -2.87%, -3.16%). The leverage ratio is meanwhile 12.40% (14.86% at T-2). These need reconciling. At T-2, when the inputs looked usable, credit_lens was already 0.984 with the Texas ratio at the 98th percentile, so credit deserves follow-up.
 
-**Main drivers:**
-- **Real estate concentration:** commercial real estate is 790% of capital (99.6th percentile). Construction loans are 160% of capital, up from about 106%.
-- **Explosive growth:** loans grew 51%, then over 100% a year. Deposits grew about 88% to 92%. The model treats this growth as risk-reducing; a supervisor should not.
-- **Brokered funding:** went from zero to 10% of deposits.
-- **Losses:** ROA fell from 0.67% to 0.12% to -0.80% (2nd percentile).
-- **Capital:** the leverage ratio fell from 9.8% to 7.1% in one quarter.
-- **Liquid assets:** securities are only 2% of assets.
+**Dominant risk: market-value capital, with moderate run risk.** Unrealized securities losses are 122% of Tier 1 (99.2nd percentile) and mtm_cap is -3.16%. run_lens is 0.822, 0.835, 0.843 and run_gap rose from 1.194 to 1.407 to 1.558. Uninsured deposits are 45.7% (88.5th percentile), offset partly by cash at 18.2% of assets. Problem assets are 1.01% of loans; loans shrank 9.7%.
 
-**Credit:** Noncurrent loans fell from 1.31% to 0.63% and charge-offs are low. This likely reflects the loan book doubling, since new loans have not yet had time to go bad.
+**Screens vs model.** The model rank is 23.46, 11.22, 14.54. Negative equity (2.596), unrealized losses (1.836) and shrinking loans (0.254) push risk up; zero brokered deposits (-0.831), securities share (-0.824), the high leverage ratio (-0.545) and cash (-0.537) pull it down. It scores the extreme Texas ratio as lowering risk (-0.182).
 
-**Assessment:** A textbook profile of rapid growth, heavy real estate concentration and wholesale funding. Losses are now emerging as capital falls.
-
-**Questions for the supervisor:**
-1. What caused this quarter's loss, and do concentration limits fit a real estate book of about eight times capital?
-2. Should growth and further brokered deposits be restricted until capital is restored?
-3. How do the newest real estate and construction loans perform under a collateral-value stress test?
+**Questions**
+1. How do negative book equity and a 12.40% leverage ratio reconcile?
+2. What drove the high Texas ratio at T-2, before the denominator broke down?
+3. How much of the cash and securities is unencumbered against 45.7% uninsured deposits?

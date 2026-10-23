@@ -1,21 +1,12 @@
-# Bank 13: Supervisory memo
+# Bank 13 – Supervisory memo
 
-**Overall:** High risk and worsening. The bank moved from the riskiest 0.17% to 0.08%. It is large (95th size percentile).
+**Dominant risk: both, and both are worsening.** run_lens rose from 0.956 to 0.962 to 0.975 and run_gap from 3.173 to 4.239 to 5.689. Uninsured deposits are 62.4% (96.5th percentile). Deposits have shrunk every period (-9.2%, -14.8%, -7.6%), and cash fell from 12.2% to 10.3% to 7.5% of assets. Unrealized losses are 73.3% of Tier 1; mtm_cap is 2.51%, and the leverage ratio 8.11% (7.9th percentile).
 
-**Main drivers:**
-- **Capital:** equity/assets fell from 4.1% to 2.2%, and the leverage ratio from 5.8% to 5.3% (0.5th percentile).
-- **Securities losses:** unrealized losses are 133% of Tier 1 (99.5th percentile). Securities are 42% of assets.
-- **Earnings:** ROA declined from 0.57% to 0.20% (6th percentile).
-- **Real estate:** commercial real estate rose from 440% to 487% of capital (94th percentile). Construction loans are 80% of capital. The Texas ratio doubled from 5.8% to 11.8%.
-- **Liquidity:**
-  - Uninsured deposits are 64% of deposits (97th percentile).
-  - Deposits are now down 3.5% a year.
-  - Cash is 0.8% of assets (1st percentile).
-  - Loans still grow about 25% a year.
+credit_lens rose from 0.879 to 0.884 to 0.948. Problem assets climbed from 1.27% to 1.99% of loans (90.8th percentile) and the Texas ratio from 9.6% to 15.9%. Charge-offs are 0.23% (90.8th percentile) and CRE is 3.68 times capital (79.7th percentile). ROA is modest at 0.74%.
 
-**Assessment:** Many serious weaknesses at once, with nothing offsetting them: minimal capital, underwater securities, heavy real estate exposure, a run-prone deposit base and almost no cash. This is the most broadly stressed bank in the group.
+**Screens vs model.** Broad agreement: the model rank is 8.62, 11.39, 10.83. Thin equity (1.126), unrealized losses (1.196), leverage (0.603), problem assets (0.297) and CRE (0.23) push risk up. But the model treats the deposit decline as lowering risk (-0.421) and the uninsured share as slightly protective (-0.14), so it likely understates the run side.
 
-**Questions for the supervisor:**
-1. What is the capital plan with leverage at 5.3% and falling, and should loan growth be restricted?
-2. How is the 25% loan growth being funded while deposits shrink?
-3. How much of the uninsured deposits could leave within days, and how would that be met without selling securities at a loss?
+**Questions**
+1. Which depositors are leaving, and how much more uninsured funding is at risk?
+2. What is driving the rise in problem assets, and which CRE segments are affected?
+3. As cash falls, how much of the securities book is unencumbered and pledgeable?

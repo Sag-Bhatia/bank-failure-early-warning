@@ -1,22 +1,12 @@
-# Bank 01: Supervisory memo
+# Bank 01 – Supervisory memo
 
-**Overall:** Middle of the pack, and improving: the bank moved from the riskiest 19.9% to the riskiest 35.7%. It is very large (99th size percentile). Credit is clean, with noncurrent loans at 0.32% and charge-offs at 0.09% of loans.
+**Dominant risk: run.** run_lens is high and steady (0.857, 0.843, 0.847 from T-2 to T). Uninsured deposits are 89.7% of deposits (98.6th percentile), and run_gap climbed from 2.599 to 2.815 to 3.172. Deposits shrank 16.5% year on year at T (1.8th percentile) after growing 21.7% at T-2, and cash fell from 12.7% to 5.5% of assets. Capital after held-to-maturity losses (mtm_cap) is 6.6%; unrealized losses equal 32% of Tier 1.
 
-**Main score drivers:**
-- Unrealized securities losses are 32% of Tier 1, up from 23%. This is the largest push (+1.07).
-- Capital is thin. Equity/assets is 7.3% (25th percentile). The leverage ratio improved from 7.9% to 8.8% but is still at the 18th percentile.
+**Credit is secondary.** credit_lens drifted up (0.557, 0.566, 0.603) but problem assets are only 0.32% of loans, the Texas ratio is 2.8% and charge-offs 0.09%. The main credit watch item is CRE at 3.50 times capital (76.8th percentile).
 
-**Funding risks the score may understate:**
-- Deposits fell 16.5% year on year (2nd percentile), after growing 22%.
-- Uninsured deposits are 90% of deposits (98.6th percentile). The model treats this as slightly risk-reducing.
-- Cash fell from 12.7% to 5.5% of assets.
-- Brokered deposits rose from 1.8% to 4.3% of deposits.
+**Screens vs model.** The model's rank improved from 19.9 to 24.79 to 35.72, the opposite of the run screen. It reads the deposit outflow as lowering risk (-0.588) and the high uninsured share as slightly lowering risk (-0.182), and large size offsets risk (-0.709). Its biggest risk pushes are unrealized losses (1.071) and thin equity (0.76). The model is likely understating the run signal here.
 
-Commercial real estate is 350% of capital (77th percentile), creeping up but not a main driver.
-
-**Assessment:** Capital and credit are acceptable. The concern is liquidity: an uninsured deposit base is running off, cash is falling, and the securities are worth less than book value.
-
-**Questions for the supervisor:**
-1. What is driving the deposit outflow, and how much of the remaining uninsured deposits could leave quickly?
-2. What funding can the bank raise without selling securities at a loss?
-3. Why are brokered deposits rising, and is there a limit on them?
+**Questions**
+1. Who left in the deposit decline, and how concentrated are the remaining uninsured depositors?
+2. How much of the securities book is already pledged, and what borrowing capacity is pre-positioned?
+3. How is the CRE book, at 3.50 times capital, being stress-tested?

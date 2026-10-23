@@ -16,3 +16,12 @@ def lenses(fin):
     # mean of two percentiles; NaN if either component is missing
     d["run"] = (g.mtm_cap.rank(pct=True, ascending=False) + g.run_gap.rank(pct=True)) / 2
     return d
+
+
+def history():
+    """Both lenses for every bank, 2019Q1-2024Q4 (the lookup page's range)."""
+    from fetch import DATA
+    fin = pd.read_parquet(DATA / "financials.parquet")
+    fin = fin[fin.REPDTE >= "20190331"]
+    pledged = pd.read_parquet(DATA / "pledged_2019_2024.parquet")
+    return lenses(fin.merge(pledged, on=["CERT", "REPDTE"], how="left")).assign(repdte=lambda d: pd.to_datetime(d.REPDTE, format="%Y%m%d"))

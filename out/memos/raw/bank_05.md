@@ -1,19 +1,12 @@
-# Bank 05: Supervisory memo
+# Bank 05 – Supervisory memo
 
-**Overall:** Sharp deterioration. The bank moved from the riskiest 10% to 7%, and now to 0.19%. It is fairly large (79th size percentile).
+**Data warning: the credit screen is unreliable for this bank.** credit_lens is near 1.0 every quarter only because the Texas ratio reads 947, 1034 and 909, implausible values caused by a negative capital base. Equity to assets is negative (-2.13%, -6.88%, -5.02%) while the leverage ratio is 11.06%; this needs reconciling.
 
-**Main drivers:**
-- **Losses:** ROA fell from +1.1% to -0.6% (2nd percentile).
-- **Credit losses:** charge-offs jumped from 0.04% to 0.71% of loans (96th percentile). Noncurrent loans rose from 0.49% to 0.71%.
-- **Capital:** the leverage ratio fell from 7.9% to 6.3% (0.7th percentile). Equity/assets fell from 7.2% to 5.4%.
-- **Real estate concentration:** commercial real estate rose from 358% to 438% of capital (90th percentile). Construction loans are 76% of capital. This is the likely source of the losses.
-- **Securities losses:** unrealized losses rose from 30% to 50% of Tier 1.
+**Dominant risk: market-value capital, feeding moderate run risk.** Unrealized securities losses are 140.6% of Tier 1 (99.6th percentile), securities are 73.9% of assets, and mtm_cap is -5.02% (from -2.13% at T-2). run_lens is 0.712, 0.774, 0.754; run_gap went from 0.74 to 1.047 to 1.029. Uninsured deposits are 35.4%. Underlying credit looks sound: problem assets 0.64% of loans, charge-offs 0.04%, CRE 0.42 times capital, ROA 1.52%.
 
-**Liquidity:** Deposits are down 5% a year, and cash is only 1% to 2% of assets. The bank has no brokered deposits, and uninsured deposits are 23%.
+**Screens vs model.** The model ranks the bank 23.71, 32.02, 29.52 – middling. Negative equity (2.596) and unrealized losses (1.836) push risk up, but the large securities share (-1.122), zero brokered deposits (-0.831) and solid ROA (-0.681) offset them. The model treats a big securities book as protective even though that same book is the source of the losses, and it scores the extreme Texas ratio as lowering risk (-0.182).
 
-**Assessment:** A real estate-heavy bank is now taking losses that eat into thin capital, while underwater securities limit how easily it can raise cash.
-
-**Questions for the supervisor:**
-1. Which real estate loans drove the charge-offs, and what does a review of the rest of the book show?
-2. Are reserves adequate, and what is the capital plan with leverage at 6.3%?
-3. How will the bank fund continuing deposit outflows with so little cash?
+**Questions**
+1. How do negative book equity and an 11.06% leverage ratio reconcile?
+2. What is the duration and hedging of the securities book, and could it be sold or pledged without crystallising losses?
+3. How concentrated are the 35.4% uninsured deposits?

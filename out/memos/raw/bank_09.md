@@ -1,22 +1,12 @@
-# Bank 09: Supervisory memo
+# Bank 09 – Supervisory memo
 
-**Overall:** High risk. The bank moved from the riskiest 1.4% to 1.8% and is now in the riskiest 0.13%. It is very small (0.3rd size percentile).
+**Data warning: the credit screen is unreliable for this bank.** credit_lens is at or near 1.0 every quarter because the Texas ratio reads 1130, 743 and 2083, implausible values caused by a negative capital base. Equity to assets is negative (-0.16%, -3.36%, -1.51%) while the leverage ratio is 10.93%; this needs reconciling.
 
-**Main drivers:**
-- **Persistent losses:** ROA is -2.0% to -2.7% in every quarter (1st percentile).
-- **Problem loans:** noncurrent loans plus foreclosed real estate jumped from 0.16% to 4.6% of loans in one quarter. The Texas ratio rose from 0.8% to 21%.
-- **Capital:** the leverage ratio fell from 7.7% to 7.3% (2.5th percentile).
-- **Shrinking loans:** loans fall 19% to 22% a year. Charge-offs are now 0.11%, after net recoveries.
+**Dominant risk: market-value capital, with moderate run risk and a credit uptick.** Unrealized securities losses are 126.8% of Tier 1 (99.4th percentile), securities are 72.6% of assets, and mtm_cap is -1.51%. run_lens is 0.755, 0.787, 0.754 and run_gap 0.887, 1.115, 1.031. Uninsured deposits are 34.7%; deposits grew 14.0%. Underneath the broken Texas ratio, problem assets did rise from 0.73% at T-1 to 1.91% at T (90.4th percentile), though charge-offs stay low at 0.03% and ROA is 1.40%.
 
-**Unusual balance sheet:**
-- Cash is about 60% of assets (99th percentile). This lowers the score and means immediate liquidity risk is low.
-- The loan book is small, so a few loans can swing the ratios.
-- Unrealized securities losses are moderate at 24% of Tier 1.
-- There are almost no uninsured or brokered deposits and almost no commercial real estate.
+**Screens vs model.** The model rank moved 14.61, 25.41, 16.03, risk-elevated. Negative equity (2.596), unrealized losses (1.836) and problem assets (0.279) push it up; the securities share (-1.111), zero brokered deposits (-0.831) and ROA (-0.57) pull it down. It scores the extreme Texas ratio as lowering risk (-0.182).
 
-**Assessment:** The issue is viability. Steady losses are eroding capital, and loan quality just worsened.
-
-**Questions for the supervisor:**
-1. What drives the ongoing losses? Is there a credible path to break-even, or is the bank winding down?
-2. Which loans became noncurrent this quarter, and how much loss is expected?
-3. At the current loss rate, how many quarters until leverage reaches the minimum?
+**Questions**
+1. How do negative book equity and a 10.93% leverage ratio reconcile?
+2. What caused problem assets to rise from 0.73% to 1.91% in one quarter?
+3. Can the securities book be pledged for liquidity without forcing sales at a loss?

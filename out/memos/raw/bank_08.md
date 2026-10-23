@@ -1,22 +1,12 @@
-# Bank 08: Supervisory memo
+# Bank 08 – Supervisory memo
 
-**Overall:** High risk. The bank is in the riskiest 0.1% to 0.23% in every quarter. It is mid-to-large (69th size percentile).
+**Data warning: the credit screen is unreliable for this bank.** Problem assets, charge-offs and loan growth are missing in every quarter, and the Texas ratio, CRE and construction ratios are all zero. Securities are 92.6% of assets (98.7% at T-2), so there may be little or no loan book, but the low credit_lens (0.076, 0.074, 0.078) reflects missing data, not proven credit strength. run_gap at T-2 is also implausible at 163.764.
 
-**Main drivers:**
-- **Negative equity:** equity/assets fell from +0.2% to -2.9% and is now -2.2%, the largest push (+2.6).
-- **Securities losses:** unrealized losses rose from 134% to 191% of Tier 1 (99.6th percentile), the highest in this group. Securities are 46% to 52% of assets.
-- **Capital:** the leverage ratio fell from 7.4% to 6.5% (0.9th percentile).
-- **Cash:** below 1% of assets in every quarter (1st to 2nd percentile).
+**Dominant risk: run, on the data that exist.** run_lens is 0.992, 0.988 and 0.975. Uninsured deposits are 86.0% (98.5th percentile). run_gap is 6.57 at T-1 and 5.216 at T, high for a bank whose assets are almost all securities, which suggests most securities are pledged or the input is wrong. Unrealized losses are 84.7% of Tier 1 (107.7% at T-1); mtm_cap fell to 0.04% at T-1 before recovering to 2.07%.
 
-**Credit and earnings are sound:** noncurrent loans are 0.09%, charge-offs 0.01%, commercial real estate 166% of capital, and ROA a steady 0.83% to 0.88%.
+**Screens vs model.** The model is benign: rank 35.01, 45.75, 54.56. Much of that comes from artefacts – zero CRE (-1.485), zero brokered deposits (-0.831) and the large securities share (-1.394) – while zero construction loans add risk (0.587). The model's view should not be relied on until inputs are fixed.
 
-**Funding:** Uninsured deposits are 26%, brokered deposits 3% to 6%, and deposits are still growing 8% a year.
-
-**Data caveat:** Texas ratios of 222 and 311 are meaningless because equity is negative.
-
-**Assessment:** A pure interest-rate and liquidity problem. With almost no cash, any meaningful outflow would force the bank to borrow or sell securities at large losses. The falling leverage ratio is a new concern.
-
-**Questions for the supervisor:**
-1. Why did leverage fall from 7.4% to 6.5% while the bank was profitable?
-2. How much of the securities book can be pledged, and what borrowing capacity is available today?
-3. What is the plan to restore positive equity and hold a realistic cash buffer?
+**Questions**
+1. Are the missing loan fields a reporting gap, or does the bank hold almost no loans?
+2. How much of the securities book is pledged, and what explains run_gap of 163.764 at T-2?
+3. How concentrated are the 86.0% uninsured deposits?

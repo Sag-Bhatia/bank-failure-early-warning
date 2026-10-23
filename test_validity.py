@@ -76,3 +76,10 @@ def test_v2_lens_direction_and_flow_rules():
     fails_none = fails.iloc[:0]
     s2 = flows(fin.drop(columns=["SCPLEDGE", "OTHBFHLB"]), extra, fails_none, "20221231", "20230331", "2023-05-15")
     assert 2 not in set(s2.CERT)                     # vanished without failing -> excluded
+
+
+def test_factcheck_catches_invented_numbers():
+    from factcheck import check
+    p = [{"risk_rank_pct": 5.0, "values": {"a": 1.04}, "peer_percentile": {"a": 98.8}, "score_contribution": {"a": 0.35}}]
+    assert check("Losses are 104% of capital (98.8th pct), contribution +0.35.", p)["untraced"] == []
+    assert set(check("Losses are 140% of capital and 77.7th pct.", p)["untraced"]) == {"140", "77.7"}

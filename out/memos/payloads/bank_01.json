@@ -2,6 +2,10 @@
  {
   "quarter": "T",
   "risk_rank_pct": 35.72,
+  "credit_lens": 0.603,
+  "run_lens": 0.847,
+  "mtm_cap": 0.0657,
+  "run_gap": 3.172,
   "values": {
    "eq_assets": 0.0726,
    "leverage": 8.7867,
@@ -59,6 +63,10 @@
  {
   "quarter": "T-1",
   "risk_rank_pct": 24.79,
+  "credit_lens": 0.566,
+  "run_lens": 0.843,
+  "mtm_cap": 0.0605,
+  "run_gap": 2.815,
   "values": {
    "eq_assets": 0.0672,
    "leverage": 8.47,
@@ -116,6 +124,10 @@
  {
   "quarter": "T-2",
   "risk_rank_pct": 19.9,
+  "credit_lens": 0.557,
+  "run_lens": 0.857,
+  "mtm_cap": 0.065,
+  "run_gap": 2.599,
   "values": {
    "eq_assets": 0.0693,
    "leverage": 7.9173,

@@ -1,0 +1,22 @@
+# Bank 08: Supervisory memo
+
+**Overall:** High risk. The bank is in the riskiest 0.1% to 0.23% in every quarter. It is mid-to-large (69th size percentile).
+
+**Main drivers:**
+- **Negative equity:** equity/assets fell from +0.2% to -2.9% and is now -2.2%, the largest push (+2.6).
+- **Securities losses:** unrealized losses rose from 134% to 191% of Tier 1 (99.6th percentile), the highest in this group. Securities are 46% to 52% of assets.
+- **Capital:** the leverage ratio fell from 7.4% to 6.5% (0.9th percentile).
+- **Cash:** below 1% of assets in every quarter (1st to 2nd percentile).
+
+**Credit and earnings are sound:** noncurrent loans are 0.09%, charge-offs 0.01%, commercial real estate 166% of capital, and ROA a steady 0.83% to 0.88%.
+
+**Funding:** Uninsured deposits are 26%, brokered deposits 3% to 6%, and deposits are still growing 8% a year.
+
+**Data caveat:** Texas ratios of 222 and 311 are meaningless because equity is negative.
+
+**Assessment:** A pure interest-rate and liquidity problem. With almost no cash, any meaningful outflow would force the bank to borrow or sell securities at large losses. The falling leverage ratio is a new concern.
+
+**Questions for the supervisor:**
+1. Why did leverage fall from 7.4% to 6.5% while the bank was profitable?
+2. How much of the securities book can be pledged, and what borrowing capacity is available today?
+3. What is the plan to restore positive equity and hold a realistic cash buffer?

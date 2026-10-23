@@ -1,22 +1,12 @@
-# Bank 03: Supervisory memo
+# Bank 03 – Supervisory memo
 
-**Overall:** High risk. The bank moved from the riskiest 1.1% to the riskiest 0.15%. It is mid-sized (60th size percentile).
+**Data warning: the credit screen is unreliable for T and T-1.** credit_lens jumped from 0.814 to 1.0 when the Texas ratio went from 0.0677 to 1470 and 1811. That jump tracks equity to assets turning negative (2.05% at T-2, -2.08%, -1.85%), not a matching change in loans; the leverage ratio is meanwhile 11.31%. These figures need reconciling.
 
-**Main drivers:**
-- **Negative equity:** equity/assets went from +0.8% to -2.1% and is now -0.7%, the largest push (+2.6). The leverage ratio is still about 8.0% (6th percentile), so this points to securities losses rather than credit losses.
-- **Securities losses:** unrealized losses are 121% of Tier 1 (99th percentile). They peaked at 137% and were 101% two quarters ago. Securities fell from 52% to 43% of assets.
-- **Earnings:** ROA fell from 0.57% to 0.46% (13th percentile).
-- **Cash:** cash is thin at 1.8% to 3.2% of assets.
+**Dominant risk: losses and capital, not runs.** ROA is deeply negative (-7.04%, -4.73%, -3.53%), improving but still severe. Charge-offs are 0.87% of loans (96.1st percentile), down from 2.7%, and problem assets fell from 2.35% to 1.2%. Unrealized securities losses are 133% of Tier 1; mtm_cap is -1.85%. Run risk looks low: run_lens 0.53, run_gap 0.187, uninsured deposits 16.2%, cash 15.4% of assets.
 
-**Credit is sound:** noncurrent loans are 0.23% of loans, charge-offs 0.05%, and commercial real estate 76% of capital.
+**Screens vs model.** The model places the bank in the riskiest 1.15% at T (3.37, 3.53 earlier), driven by negative equity (2.596), unrealized losses (1.836), losses (1.587) and charge-offs (0.335). This agrees with the solvency concern. But loan growth of 67.7% at T is scored as lowering risk (-0.334), which is hard to justify for a loss-making bank.
 
-**Funding:** Deposits grow about 13% a year. Brokered deposits appeared for the first time, reaching 2.1% of deposits. The uninsured share rose to 29%.
-
-**Data caveat:** Texas ratios of 411 and 594 are meaningless because equity is negative.
-
-**Assessment:** The risk is securities valuation and low liquidity, not loan quality.
-
-**Questions for the supervisor:**
-1. How are the securities split between available-for-sale and held-to-maturity, and what is the plan to restore positive equity?
-2. Why did the bank start using brokered deposits?
-3. What liquidity is available without selling underwater securities?
+**Questions**
+1. What is driving the losses, and when does the bank expect to return to profit?
+2. Why did loans grow 67.7% in a year while the bank was losing money, and how were they underwritten?
+3. How do negative book equity and an 11.31% leverage ratio reconcile, and what is the capital plan?

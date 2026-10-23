@@ -1,22 +1,12 @@
-# Bank 10: Supervisory memo
+# Bank 10 – Supervisory memo
 
-**Overall:** High risk and worsening. The bank moved from the riskiest 0.14% to 0.04%. It is very small (0.4th size percentile).
+**Dominant risk: run.** run_lens held at 0.935 for two quarters, then rose to 0.98, and run_gap jumped from 2.441 and 2.711 to 5.806 at T. That jump came while the uninsured share was 34.1% (34.9% at T-2) and securities were steady at 44.5% of assets, which points to more securities being encumbered. mtm_cap is thin at 1.77% (0.58% at T-1). Unrealized losses are 49.4% of Tier 1 (87.5th percentile); equity is 5.32% of assets (9.1st percentile).
 
-**Main drivers:**
-- **Problem loans:** noncurrent loans plus foreclosed real estate are steady at about 8.2% of loans (97th percentile). The Texas ratio is about 32%.
-- **Charge-offs:** jumped from zero to 1.25% of loans (96.5th percentile).
-- **Capital:** the leverage ratio is only 6.1% to 6.4% (1st percentile or below).
-- **Earnings:** ROA is weak at 0.35% to 0.42%, too low to absorb losses.
-- **Shrinking loans:** loans fall 27% to 38% a year (bottom 1%).
-- **Securities losses:** unrealized losses are 29% to 37% of Tier 1.
+**Credit is a mild and rising watch item.** credit_lens rose from 0.457 and 0.438 to 0.578. Problem assets went from 0.20% to 0.36% of loans and the Texas ratio from 1.5% to 2.6%, still low. Loans shrank 3.0%.
 
-**Mitigants:** Cash is about 21% of assets. The bank has no brokered deposits, uninsured deposits are 12%, and deposits are stable.
+**Screens vs model.** The model rank is 35.94, 46.1, 32.24 – moderate and not tracking the sharp run_gap rise. Thin equity (1.179) and unrealized losses (1.122) push it up; zero brokered deposits (-0.831), the securities share (-0.636) and low problem assets (-0.386) pull it down. The run screen is the stronger warning here.
 
-**Model caveat:** Zero construction lending adds +0.59 to the score, which looks like an artifact.
-
-**Assessment:** A long-standing problem-asset bank with minimal capital is now booking losses. The concern is solvency, not liquidity.
-
-**Questions for the supervisor:**
-1. Are reserves adequate for the 8% noncurrent book, and what further charge-offs are expected?
-2. Why is the loan book shrinking so quickly?
-3. Can leverage of about 6% absorb further charge-offs, or is new capital needed?
+**Questions**
+1. What caused run_gap to jump from 2.711 to 5.806 in one quarter – new borrowings secured by securities?
+2. How quickly could the 34.1% uninsured deposits leave, and what contingent funding is in place?
+3. What is behind the small rise in problem assets?
