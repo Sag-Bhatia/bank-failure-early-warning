@@ -83,3 +83,48 @@ def test_factcheck_catches_invented_numbers():
     p = [{"risk_rank_pct": 5.0, "values": {"a": 1.04}, "peer_percentile": {"a": 98.8}, "score_contribution": {"a": 0.35}}]
     assert check("Losses are 104% of capital (98.8th pct), contribution +0.35.", p)["untraced"] == []
     assert set(check("Losses are 140% of capital and 77.7th pct.", p)["untraced"]) == {"140", "77.7"}
+
+
+def _raw_v3(rows):
+    from fetch_v3 import FIELDS
+    base = {c: 0.0 for c in FIELDS.split(",")}
+    base.update(NAME="X", CITY="Y", STALP="CA", ASSET=1000.0, DEP=800.0, EQ=100.0, RBCT1J=100.0, LNLSGR=500.0, DEPUNINS=400.0,
+                CHBAL=50.0, SC=100.0, SCHA=100.0, SCHF=90.0, SCAA=0.0, SCAF=0.0)
+    df = pd.DataFrame([{**base, **r} for r in rows])
+    df["repdte"] = pd.to_datetime(df.REPDTE, format="%Y%m%d")
+    return df
+
+
+def test_v3_loan_mtm_and_run_labels():
+    from features_v3 import build
+    yields = pd.DataFrame({c: 1.0 for c in ["DGS3MO", "DGS1", "DGS3", "DGS5", "DGS10"]},
+                          index=pd.date_range("2020-03-31", periods=12, freq="QE"))
+    yields.iloc[8:, :] = 3.0  # +2pp over 8 quarters by 2022Q1
+    rows = [dict(CERT=1, REPDTE="20220331", LNRS5T15=100.0),                     # 100 * 6y * 2% = 12
+            dict(CERT=1, REPDTE="20220630", DEPUNINS=300.0),                      # -25% -> run event
+            dict(CERT=2, REPDTE="20220331"),                                       # vanishes, no failure -> excluded
+            dict(CERT=3, REPDTE="20220331"),                                       # fails before next filing -> event
+            dict(CERT=4, REPDTE="20220331", DEPUNINS=40.0),                        # uninsured 5% -> not eligible
+            dict(CERT=4, REPDTE="20220630", DEPUNINS=10.0)]
+    fails = pd.DataFrame({"CERT": [3.0], "NAME": ["Z"], "faildate": pd.to_datetime(["2022-07-15"])})
+    out = build(_raw_v3(rows), yields, fails).set_index(["CERT", "repdte"])
+    r1 = out.loc[(1, pd.Timestamp("2022-03-31"))]
+    assert r1.loan_mtm_t1 == pytest.approx(12 / 100)
+    assert r1.mtm_cap == pytest.approx((100 - 10 - 12) / 1000)
+    assert r1.run_event == 1.0
+    assert pd.isna(out.loc[(2, pd.Timestamp("2022-03-31"))].run_event)
+    assert out.loc[(3, pd.Timestamp("2022-03-31"))].run_event == 1.0
+    assert pd.isna(out.loc[(4, pd.Timestamp("2022-03-31"))].run_event)
+
+
+def test_fed_name_matching():
+    from fed_borrowing import match, norm
+    assert norm("FIRST NB OF SHINER") == norm("First National Bank of Shiner")
+    assert norm("SENTRY BK") == norm("Sentry Bank")
+    banks = pd.DataFrame({"CERT": [1, 2, 3], "RSSDID": [11.0, 22.0, 33.0], "NAME": ["SENTRY BANK", "WAYNE BANK", "WAYNE BANK"],
+                          "CITY": ["SAINT JOSEPH", "HONESDALE", "OTHERTOWN"], "STALP": ["MN", "PA", "PA"]})
+    loans = pd.DataFrame({"name": ["SENTRY BK", "WAYNE BK", "MYSTERY FCU"], "city": ["SAINT JOSEPH", "HONESDALE", "X"],
+                          "state": ["MN", "PA", "PA"], "aba": ["1", "2", "3"], "amount": [1.0, 1.0, 1.0],
+                          "date": pd.to_datetime(["2023-03-14"] * 3)})
+    m = match(loans, banks, pd.Series(dtype=float))
+    assert m.CERT.tolist()[:2] == [1, 2] and pd.isna(m.CERT.iloc[2]) and m.credit_union.iloc[2]
