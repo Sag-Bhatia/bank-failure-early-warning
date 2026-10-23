@@ -1,0 +1,209 @@
+{
+  "T1_2023_uninsured": {
+    "n": 4662,
+    "run": {
+      "rho": 0.072,
+      "mean_outcome_top5": -0.0573,
+      "mean_outcome_rest": 0.0165,
+      "recall_worst5_in_top5": 0.064
+    },
+    "credit": {
+      "rho": -0.011,
+      "mean_outcome_top5": -0.0307,
+      "mean_outcome_rest": 0.0151,
+      "recall_worst5_in_top5": 0.051
+    },
+    "ci95": {
+      "run": [
+        0.044,
+        0.102
+      ],
+      "credit": [
+        -0.041,
+        0.018
+      ],
+      "diff": [
+        0.045,
+        0.123
+      ]
+    }
+  },
+  "T1_2023_total_deposits": {
+    "n": 4662,
+    "run": {
+      "rho": -0.029,
+      "mean_outcome_top5": -0.0054,
+      "mean_outcome_rest": 0.0078,
+      "recall_worst5_in_top5": 0.085
+    },
+    "credit": {
+      "rho": -0.027,
+      "mean_outcome_top5": 0.0034,
+      "mean_outcome_rest": 0.0074,
+      "recall_worst5_in_top5": 0.034
+    },
+    "ci95": {
+      "run": [
+        -0.059,
+        0.0
+      ],
+      "credit": [
+        -0.056,
+        0.002
+      ],
+      "diff": [
+        -0.043,
+        0.037
+      ]
+    }
+  },
+  "T1_2023_fhlb_jump": {
+    "n": 4660,
+    "run": {
+      "rho": 0.023,
+      "mean_outcome_top5": -0.0031,
+      "mean_outcome_rest": -0.0021,
+      "recall_worst5_in_top5": 0.082
+    },
+    "credit": {
+      "rho": -0.01,
+      "mean_outcome_top5": -0.0021,
+      "mean_outcome_rest": -0.0022,
+      "recall_worst5_in_top5": 0.06
+    },
+    "ci95": {
+      "run": [
+        -0.007,
+        0.05
+      ],
+      "credit": [
+        -0.037,
+        0.016
+      ],
+      "diff": [
+        -0.006,
+        0.069
+      ]
+    }
+  },
+  "T1_2023_uninsured_1B_plus": {
+    "n": 970,
+    "run": {
+      "rho": 0.092,
+      "mean_outcome_top5": -0.1013,
+      "mean_outcome_rest": 0.0455,
+      "recall_worst5_in_top5": 0.102
+    },
+    "credit": {
+      "rho": -0.007,
+      "mean_outcome_top5": 0.6339,
+      "mean_outcome_rest": 0.0064,
+      "recall_worst5_in_top5": 0.102
+    },
+    "ci95": {
+      "run": [
+        0.028,
+        0.155
+      ],
+      "credit": [
+        -0.073,
+        0.063
+      ],
+      "diff": [
+        0.012,
+        0.192
+      ]
+    }
+  },
+  "T1_supplementary_logit_B_rho": 0.027,
+  "T2_2008_failures": {
+    "n": 7788,
+    "failures": 362,
+    "run": {
+      "auc": 0.7,
+      "recall_top5": 0.127
+    },
+    "credit": {
+      "auc": 0.746,
+      "recall_top5": 0.293
+    },
+    "ci95": {
+      "run": [
+        0.674,
+        0.724
+      ],
+      "credit": [
+        0.715,
+        0.775
+      ],
+      "diff": [
+        -0.078,
+        -0.013
+      ]
+    }
+  },
+  "T3_placebo_2019": {
+    "n": 5345,
+    "run": {
+      "rho": 0.017,
+      "mean_outcome_top5": 0.0143,
+      "mean_outcome_rest": 0.2273,
+      "recall_worst5_in_top5": 0.049
+    },
+    "credit": {
+      "rho": -0.001,
+      "mean_outcome_top5": 0.0189,
+      "mean_outcome_rest": 0.2271,
+      "recall_worst5_in_top5": 0.086
+    },
+    "ci95": {
+      "run": [
+        -0.011,
+        0.044
+      ],
+      "credit": [
+        -0.027,
+        0.027
+      ],
+      "diff": [
+        -0.021,
+        0.052
+      ]
+    }
+  },
+  "H3_run_rho_panic_minus_calm_ci95": [
+    0.018,
+    0.093
+  ],
+  "hypotheses": {
+    "H1_run_beats_credit_2023": true,
+    "H2_credit_beats_run_2008": true,
+    "H3_run_stronger_in_panic": true
+  },
+  "named_2022Q4": [
+    {
+      "NAME": "SILICON VALLEY BANK",
+      "run": 0.9225,
+      "credit": 0.361,
+      "mtm_cap": 0.0014,
+      "run_gap": 2.5565,
+      "unins_loss": 1.0
+    },
+    {
+      "NAME": "SIGNATURE BANK",
+      "run": 0.8467,
+      "credit": 0.6032,
+      "mtm_cap": 0.0657,
+      "run_gap": 3.1722,
+      "unins_loss": 1.0
+    },
+    {
+      "NAME": "FIRST REPUBLIC BANK",
+      "run": 0.9049,
+      "credit": 0.3114,
+      "mtm_cap": 0.0596,
+      "run_gap": 5.4108,
+      "unins_loss": 0.5744
+    }
+  ]
+}
