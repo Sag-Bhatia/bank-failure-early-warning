@@ -1,0 +1,434 @@
+{
+  "E1_2008": {
+    "n": 8630,
+    "failures": 413,
+    "auc": {
+      "F_A_mono": 0.8094,
+      "F_A_unc": 0.7476,
+      "F_A_logit": 0.7555,
+      "v2_credit": 0.7532,
+      "v2_run": 0.6824
+    },
+    "recall5": {
+      "F_A_mono": 0.3027,
+      "F_A_unc": 0.2518,
+      "F_A_logit": 0.2446,
+      "v2_credit": 0.2978,
+      "v2_run": 0.1186
+    },
+    "pr_auc": {
+      "F_A_mono": 0.2523,
+      "F_A_unc": 0.2006,
+      "F_A_logit": 0.1888,
+      "v2_credit": 0.2188,
+      "v2_run": 0.0935
+    },
+    "ci95": {
+      "auc": {
+        "F_A_mono": [
+          0.787,
+          0.831
+        ],
+        "F_A_unc": [
+          0.723,
+          0.774
+        ],
+        "F_A_logit": [
+          0.733,
+          0.778
+        ],
+        "v2_credit": [
+          0.727,
+          0.781
+        ],
+        "v2_run": [
+          0.657,
+          0.705
+        ],
+        "F_A_mono - v2_credit": [
+          0.029,
+          0.084
+        ],
+        "F_A_mono - F_A_unc": [
+          0.047,
+          0.075
+        ]
+      },
+      "recall5": {
+        "F_A_mono": [
+          0.264,
+          0.344
+        ],
+        "F_A_unc": [
+          0.213,
+          0.293
+        ],
+        "F_A_logit": [
+          0.21,
+          0.282
+        ],
+        "v2_credit": [
+          0.258,
+          0.335
+        ],
+        "v2_run": [
+          0.09,
+          0.15
+        ],
+        "F_A_mono - v2_credit": [
+          -0.033,
+          0.04
+        ],
+        "F_A_mono - F_A_unc": [
+          0.022,
+          0.075
+        ]
+      },
+      "pr_auc": {
+        "F_A_mono": [
+          0.213,
+          0.295
+        ],
+        "F_A_unc": [
+          0.166,
+          0.242
+        ],
+        "F_A_logit": [
+          0.155,
+          0.231
+        ],
+        "v2_credit": [
+          0.182,
+          0.262
+        ],
+        "v2_run": [
+          0.08,
+          0.112
+        ],
+        "F_A_mono - v2_credit": [
+          0.002,
+          0.062
+        ],
+        "F_A_mono - F_A_unc": [
+          0.036,
+          0.066
+        ]
+      }
+    }
+  },
+  "E2_2019_2024": {
+    "failed_banks": 18,
+    "F_B_mono_hits": 10,
+    "F_B_unc_hits": 10,
+    "F_B_logit_hits": 9,
+    "v1_logit_B_hits": 10,
+    "named": [
+      {
+        "NAME": "SILICON VALLEY BANK",
+        "F_B_mono_hit": false,
+        "F_B_mono_lead_days": NaN,
+        "F_B_mono_last_rank_pct": 36.48
+      },
+      {
+        "NAME": "REPUBLIC BANK",
+        "F_B_mono_hit": true,
+        "F_B_mono_lead_days": 437.0,
+        "F_B_mono_last_rank_pct": 0.09
+      },
+      {
+        "NAME": "SIGNATURE BANK",
+        "F_B_mono_hit": false,
+        "F_B_mono_lead_days": NaN,
+        "F_B_mono_last_rank_pct": 67.38
+      },
+      {
+        "NAME": "FIRST REPUBLIC BANK",
+        "F_B_mono_hit": false,
+        "F_B_mono_lead_days": NaN,
+        "F_B_mono_last_rank_pct": 29.52
+      }
+    ]
+  },
+  "E3_2023_O1_fed_borrowing": {
+    "n": 4702,
+    "positives": 642,
+    "match_report": {
+      "loans": 5537,
+      "credit_union_loans": 1208,
+      "bank_borrowers": 1031,
+      "bank_borrowers_matched": 920,
+      "bank_amount_matched_share": 0.5788
+    },
+    "auc": {
+      "R_mono": 0.4152,
+      "R_unc": 0.3989,
+      "R_logit": 0.4086,
+      "v2_run": 0.6299,
+      "v2_credit": 0.517,
+      "F_B_mono": 0.5805
+    },
+    "recall5": {
+      "R_mono": 0.0218,
+      "R_unc": 0.028,
+      "R_logit": 0.0218,
+      "v2_run": 0.0966,
+      "v2_credit": 0.0607,
+      "F_B_mono": 0.0717
+    },
+    "ci95": {
+      "auc": {
+        "R_mono": [
+          0.392,
+          0.438
+        ],
+        "R_unc": [
+          0.377,
+          0.422
+        ],
+        "R_logit": [
+          0.386,
+          0.432
+        ],
+        "v2_run": [
+          0.608,
+          0.651
+        ],
+        "v2_credit": [
+          0.493,
+          0.541
+        ],
+        "F_B_mono": [
+          0.557,
+          0.603
+        ],
+        "R_mono - v2_run": [
+          -0.248,
+          -0.183
+        ],
+        "R_mono - R_unc": [
+          0.009,
+          0.023
+        ]
+      },
+      "recall5": {
+        "R_mono": [
+          0.011,
+          0.032
+        ],
+        "R_unc": [
+          0.015,
+          0.041
+        ],
+        "R_logit": [
+          0.012,
+          0.034
+        ],
+        "v2_run": [
+          0.076,
+          0.118
+        ],
+        "v2_credit": [
+          0.045,
+          0.08
+        ],
+        "F_B_mono": [
+          0.056,
+          0.092
+        ],
+        "R_mono - v2_run": [
+          -0.1,
+          -0.052
+        ],
+        "R_mono - R_unc": [
+          -0.017,
+          0.005
+        ]
+      }
+    }
+  },
+  "E3_2023_O2_q2_uninsured": {
+    "n": 4641,
+    "rho": {
+      "R_mono": 0.0379,
+      "R_unc": 0.0435,
+      "R_logit": 0.0549,
+      "v2_run": 0.0117,
+      "v2_credit": -0.0065,
+      "F_B_mono": 0.0094
+    },
+    "ci95": {
+      "rho": {
+        "R_mono": [
+          0.009,
+          0.069
+        ],
+        "R_unc": [
+          0.015,
+          0.075
+        ],
+        "R_logit": [
+          0.026,
+          0.086
+        ],
+        "v2_run": [
+          -0.018,
+          0.041
+        ],
+        "v2_credit": [
+          -0.034,
+          0.023
+        ],
+        "F_B_mono": [
+          -0.021,
+          0.038
+        ],
+        "R_mono - v2_run": [
+          -0.017,
+          0.071
+        ]
+      }
+    }
+  },
+  "E3_2023_O3_q1_uninsured_SEEN_IN_V2": {
+    "n": 4671,
+    "rho": {
+      "R_mono": -0.0305,
+      "R_unc": -0.0371,
+      "R_logit": -0.0419,
+      "v2_run": 0.0722,
+      "v2_credit": -0.011,
+      "F_B_mono": -0.0114
+    },
+    "ci95": {
+      "rho": {
+        "R_mono": [
+          -0.06,
+          -0.002
+        ],
+        "R_unc": [
+          -0.067,
+          -0.008
+        ],
+        "R_logit": [
+          -0.07,
+          -0.013
+        ],
+        "v2_run": [
+          0.045,
+          0.103
+        ],
+        "v2_credit": [
+          -0.039,
+          0.018
+        ],
+        "F_B_mono": [
+          -0.043,
+          0.016
+        ],
+        "R_mono - v2_run": [
+          -0.147,
+          -0.062
+        ]
+      }
+    }
+  },
+  "E4_2019_placebo": {
+    "n": 5399,
+    "positives": 30,
+    "match_report": {
+      "loans": 604,
+      "credit_union_loans": 170,
+      "bank_borrowers": 299,
+      "bank_borrowers_matched": 233,
+      "bank_amount_matched_share": 0.9236
+    },
+    "R_mono_auc": 0.6238
+  },
+  "H3_R_auc_panic_minus_calm_ci95": [
+    -0.304,
+    -0.112
+  ],
+  "hypotheses": {
+    "H1_F_A_beats_credit_lens_2008": true,
+    "H2_R_beats_v2_run_lens_2023_O1": false,
+    "H3_R_stronger_in_panic": false,
+    "H4_mono_minus_unc_auc_2008": [
+      0.047,
+      0.075
+    ],
+    "H4_mono_minus_unc_auc_2023": [
+      0.009,
+      0.023
+    ]
+  },
+  "named_2022Q4": [
+    {
+      "NAME": "SILICON VALLEY BANK",
+      "R_pct": 0.5,
+      "F_pct": 0.631,
+      "v2_run": 0.922,
+      "v2_credit": 0.361,
+      "O1": 1,
+      "borrowed": 0.0,
+      "ASSET": 209026000.0,
+      "Capital": 0.721,
+      "Asset quality": 0.475,
+      "Earnings": 0.53,
+      "Liquidity": 0.457,
+      "Rate sensitivity": 0.621,
+      "Depositors": 0.994,
+      "Growth & concentration": 0.253
+    },
+    {
+      "NAME": "REPUBLIC BANK",
+      "R_pct": 0.507,
+      "F_pct": 0.997,
+      "v2_run": 0.984,
+      "v2_credit": 0.915,
+      "O1": 1,
+      "borrowed": 7811000.0,
+      "ASSET": 5972192.0,
+      "Capital": 0.993,
+      "Asset quality": 0.7,
+      "Earnings": 0.858,
+      "Liquidity": 0.713,
+      "Rate sensitivity": 0.988,
+      "Depositors": 0.965,
+      "Growth & concentration": 0.878
+    },
+    {
+      "NAME": "SIGNATURE BANK",
+      "R_pct": 0.562,
+      "F_pct": 0.318,
+      "v2_run": 0.847,
+      "v2_credit": 0.603,
+      "O1": 1,
+      "borrowed": 0.0,
+      "ASSET": 110363650.0,
+      "Capital": 0.725,
+      "Asset quality": 0.607,
+      "Earnings": 0.454,
+      "Liquidity": 0.761,
+      "Rate sensitivity": 0.4,
+      "Depositors": 0.994,
+      "Growth & concentration": 0.586
+    },
+    {
+      "NAME": "FIRST REPUBLIC BANK",
+      "R_pct": 0.218,
+      "F_pct": 0.702,
+      "v2_run": 0.905,
+      "v2_credit": 0.311,
+      "O1": 1,
+      "borrowed": 1247581974.771,
+      "ASSET": 212638872.0,
+      "Capital": 0.821,
+      "Asset quality": 0.313,
+      "Earnings": 0.641,
+      "Liquidity": 0.835,
+      "Rate sensitivity": 0.869,
+      "Depositors": 0.975,
+      "Growth & concentration": 0.587
+    }
+  ]
+}
