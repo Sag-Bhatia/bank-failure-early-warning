@@ -1,7 +1,13 @@
-"""Explanation-only LLM memos for flagged banks. The model sees anonymized numbers; real names are attached afterwards."""
-import json
+"""Explanation-only LLM memos for flagged banks. The model sees anonymized numbers; real names are attached afterwards.
 
-import anthropic
+`python analyst.py dump`   -> shuffled anonymized payloads in out/memos/payloads/ (key kept in data/, out of reach)
+   a fresh agent that sees only that folder writes out/memos/raw/bank_XX.md
+`python analyst.py render` -> out/memos/NN_CERT.md with the real name attached
+"""
+import json
+import random
+import sys
+
 import pandas as pd
 
 from backtest import MODELS, NAMED, OUT, ROOT, load_frozen
@@ -12,6 +18,9 @@ SYSTEM = """You are a bank supervisory analyst. You receive only computed call-r
 its percentile against all banks in the same quarter, and each factor's contribution to a logistic risk score.
 Write a memo of at most 250 words: the main risk drivers, how they changed over the quarters shown, and what a supervisor should ask next.
 Use only the numbers given. Do not guess or mention the bank's identity, location, the calendar period, or any real-world events or institutions."""
+
+MEMOS = OUT / "memos"
+KEY = DATA / "memo_key.json"
 
 
 def payload(rows, peers, model, cols):
@@ -27,44 +36,47 @@ def payload(rows, peers, model, cols):
     return quarters
 
 
-def memo(client, quarters):
-    resp = client.beta.messages.create(
-        model="claude-opus-5-5", max_tokens=16000, system=SYSTEM,
-        output_config={"effort": "medium"},
-        betas=["server-side-fallback-2026-07-01"], fallbacks="default",
-        messages=[{"role": "user", "content": json.dumps(quarters)}],
-    )
-    if resp.stop_reason == "refusal":
-        return "(declined)"
-    return "".join(b.text for b in resp.content if b.type == "text")
+def scored():
+    feats = pd.read_parquet(DATA / "features.parquet")
+    peers = feats[feats.split == "test"]
+    return peers, peers.merge(pd.read_parquet(OUT / "scores.parquet")[["CERT", "repdte", "pct_logit_B"]], on=["CERT", "repdte"])
 
 
-def main():
+def dump():
     frozen = json.loads((ROOT / "frozen.json").read_text())
     cols = frozen["models"]["B"]["features"]
     model = load_frozen(MODELS / "logit_B.pkl", frozen["models"]["B"]["sha256"])
-    feats = pd.read_parquet(DATA / "features.parquet")
-    peers = feats[feats.split == "test"]
-    scored = pd.read_parquet(OUT / "scores.parquet")[["CERT", "repdte", "pct_logit_B"]]
-    d = peers.merge(scored, on=["CERT", "repdte"])
+    peers, d = scored()
 
     named = failures()
     named = named[named.NAME.str.upper().isin(NAMED)]
     targets = [(c, d[d.CERT == c].repdte.max()) for c in named.CERT]
     q4 = d[d.repdte == "2022-12-31"].nsmallest(10, "pct_logit_B")
     targets += [(c, q4.repdte.iloc[0]) for c in q4.CERT if c not in set(named.CERT)]
+    random.Random(0).shuffle(targets)  # file order must not reveal which banks are the named failures
 
-    client = anthropic.Anthropic()
-    (OUT / "memos").mkdir(exist_ok=True)
+    (MEMOS / "payloads").mkdir(parents=True, exist_ok=True)
+    (MEMOS / "raw").mkdir(exist_ok=True)
+    (MEMOS / "payloads" / "INSTRUCTIONS.md").write_text(SYSTEM + "\n")
+    key = {}
     for n, (cert, asof) in enumerate(targets, 1):
         rows = d[(d.CERT == cert) & (d.repdte <= asof)].sort_values("repdte").tail(3)
-        text = memo(client, payload(rows, peers, model, cols))
-        r = rows.iloc[-1]
+        (MEMOS / "payloads" / f"bank_{n:02d}.json").write_text(json.dumps(payload(rows, peers, model, cols), indent=1))
+        key[n] = {"CERT": int(cert), "repdte": str(asof.date())}
+    KEY.write_text(json.dumps(key, indent=1))
+    print(f"{len(targets)} payloads written")
+
+
+def render():
+    _, d = scored()
+    for n, k in json.loads(KEY.read_text()).items():
+        raw = MEMOS / "raw" / f"bank_{int(n):02d}.md"
+        r = d[(d.CERT == k["CERT"]) & (d.repdte == k["repdte"])].iloc[0]
         header = f"# {r.NAME} ({r.CITY}, {r.STALP}) — report {r.repdte.date()}, Model B rank top {r.pct_logit_B:.2%}\n"
-        header += f"Failed: {r.faildate.date() if pd.notna(r.faildate) else 'no'}. Memo written blind (anonymized as Bank {n}).\n\n"
-        (OUT / "memos" / f"{n:02d}_{cert}.md").write_text(header + text + "\n")
+        header += f"Failed: {r.faildate.date() if pd.notna(r.faildate) else 'no'}. Memo written blind (anonymized as Bank {int(n)}).\n\n"
+        (MEMOS / f"{int(n):02d}_{k['CERT']}.md").write_text(header + raw.read_text())
         print(n, r.NAME)
 
 
 if __name__ == "__main__":
-    main()
+    {"dump": dump, "render": render}[sys.argv[1]]()

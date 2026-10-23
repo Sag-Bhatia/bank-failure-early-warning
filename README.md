@@ -46,6 +46,12 @@ SVB's 2022Q4 numbers were:
 
 The logistic model's linear weights cancelled these out. Gradient boosting can learn combinations of extremes, and it caught the pattern. The data had the signal; the training history did not contain a failure like this.
 
+## What the blind analyst said
+A fresh Claude agent read only the shuffled, anonymized payloads: ratios, peer percentiles and score contributions, with no name, place, date or exact size. It wrote memos for SVB, Signature, First Republic and the top 10 of the 2022Q4 watchlist. Names were attached afterwards.
+- **SVB (anonymized as Bank 11):** "The model's rank understates the risk." It pointed to unrealized losses at 104% of Tier 1, 86% uninsured deposits and a deposit outflow. It also noticed that the model's weights treat size, securities and uninsured deposits as *protective* ([out/memos/11_24735.md](out/memos/11_24735.md)).
+- **Bank of East Asia (Bank 7):** a top watchlist entry that the analyst correctly called "can't be assessed". Its inputs are missing or zero, so its rank is a data artifact.
+- **Caveat:** the analyst saw ratios, not names, but a very large bank with this profile could still be recognized from general knowledge. Read these memos as an illustration of explanation, not as evidence of prediction.
+
 ## How validity was protected
 - **Preregistration.** [FEATURES.md](FEATURES.md) (features, label, split, metrics, watchlist size) was committed before any training (`b01ce2f`).
 - **Frozen model.** Models were trained only on `REPDTE` 2001Q1–2018Q1 and committed with SHA-256 hashes (`2d0d0ff`) before test scoring. [backtest.py](backtest.py) refuses to score if a hash differs. Results were committed unedited (`Backtest results` commit).
@@ -76,7 +82,9 @@ uv venv .venv && uv pip install --python .venv/bin/python pandas scikit-learn py
 .venv/bin/python -m pytest test_validity.py
 .venv/bin/python train.py        # do not re-run after backtest; it would change the hashes
 .venv/bin/python backtest.py
-.venv/bin/python analyst.py      # needs ANTHROPIC_API_KEY; writes out/memos/
+.venv/bin/python analyst.py dump    # anonymized, shuffled payloads -> out/memos/payloads/
+# a fresh Claude agent that may read only payloads/ writes out/memos/raw/bank_XX.md
+.venv/bin/python analyst.py render  # attaches real names -> out/memos/NN_CERT.md
 ```
 
 Outputs in `out/`: `metrics.csv`, `failed_banks.csv`, `named_ranks.csv`, `watchlist_by_quarter.csv`, `scores.parquet` (every test score, for tracing), `named_cases.png`.

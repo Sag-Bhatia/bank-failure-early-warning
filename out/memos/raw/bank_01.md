@@ -1,0 +1,22 @@
+# Bank 01: Supervisory memo
+
+**Overall:** Middle of the pack, and improving: the bank moved from the riskiest 19.9% to the riskiest 35.7%. It is very large (99th size percentile). Credit is clean, with noncurrent loans at 0.32% and charge-offs at 0.09% of loans.
+
+**Main score drivers:**
+- Unrealized securities losses are 32% of Tier 1, up from 23%. This is the largest push (+1.07).
+- Capital is thin. Equity/assets is 7.3% (25th percentile). The leverage ratio improved from 7.9% to 8.8% but is still at the 18th percentile.
+
+**Funding risks the score may understate:**
+- Deposits fell 16.5% year on year (2nd percentile), after growing 22%.
+- Uninsured deposits are 90% of deposits (98.6th percentile). The model treats this as slightly risk-reducing.
+- Cash fell from 12.7% to 5.5% of assets.
+- Brokered deposits rose from 1.8% to 4.3% of deposits.
+
+Commercial real estate is 350% of capital (77th percentile), creeping up but not a main driver.
+
+**Assessment:** Capital and credit are acceptable. The concern is liquidity: an uninsured deposit base is running off, cash is falling, and the securities are worth less than book value.
+
+**Questions for the supervisor:**
+1. What is driving the deposit outflow, and how much of the remaining uninsured deposits could leave quickly?
+2. What funding can the bank raise without selling securities at a loss?
+3. Why are brokered deposits rising, and is there a limit on them?
