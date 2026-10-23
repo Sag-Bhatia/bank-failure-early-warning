@@ -1,0 +1,95 @@
+{
+  "train_rows": 548913,
+  "train_positives": 2195,
+  "train_repdte": [
+    "2001-03-31",
+    "2018-03-31"
+  ],
+  "sklearn": "1.9.1",
+  "models": {
+    "A": {
+      "features": [
+        "eq_assets",
+        "leverage",
+        "npl_oreo",
+        "texas",
+        "roa",
+        "cre_cap",
+        "constr_cap",
+        "loan_growth",
+        "brokered",
+        "nco",
+        "log_assets"
+      ],
+      "cv_pr_auc": {
+        "0.001": 0.41239295706214546,
+        "0.01": 0.4109664523512396,
+        "0.1": 0.4106711607827299,
+        "1": 0.41069652346400487
+      },
+      "C": 0.001,
+      "coef": {
+        "eq_assets": -0.4653,
+        "leverage": -0.5941,
+        "npl_oreo": 0.3017,
+        "texas": 0.2368,
+        "roa": -0.8014,
+        "cre_cap": 0.3544,
+        "constr_cap": -0.0721,
+        "loan_growth": 0.088,
+        "brokered": 0.1892,
+        "nco": 0.2499,
+        "log_assets": -0.2686
+      },
+      "sha256": "648857a5fc6a56db559fc6b90278a45301bbb30cfb935af9c576bb3cd8726aa5",
+      "hgb_sha256": "9b6fb99e80768c2c19f87b037158f1679c499b9acacdcd76222f27e68f097047"
+    },
+    "B": {
+      "features": [
+        "eq_assets",
+        "leverage",
+        "npl_oreo",
+        "texas",
+        "roa",
+        "cre_cap",
+        "constr_cap",
+        "loan_growth",
+        "brokered",
+        "nco",
+        "log_assets",
+        "unreal_loss_t1",
+        "uninsured",
+        "dep_growth",
+        "sec_assets",
+        "cash_assets"
+      ],
+      "cv_pr_auc": {
+        "0.001": 0.3140088629057536,
+        "0.01": 0.30312910177827473,
+        "0.1": 0.30189925102807513,
+        "1": 0.3018923640808323
+      },
+      "C": 0.001,
+      "coef": {
+        "eq_assets": -0.4992,
+        "leverage": -0.7014,
+        "npl_oreo": 0.5773,
+        "texas": -0.035,
+        "roa": -0.7349,
+        "cre_cap": 0.2856,
+        "constr_cap": -0.1129,
+        "loan_growth": -0.1684,
+        "brokered": 0.1598,
+        "nco": 0.262,
+        "log_assets": -0.2447,
+        "unreal_loss_t1": 0.3531,
+        "uninsured": -0.0649,
+        "dep_growth": 0.2545,
+        "sec_assets": -0.4746,
+        "cash_assets": -0.3768
+      },
+      "sha256": "f9ebd5b9c392ad10b9e588855f845f565f7beb5897a5a6d32b30d8e644510a24",
+      "hgb_sha256": "5d1099eb61bc307e72b8cb5af5ea5d907e80ee4f61b4e4670802fb05e8326485"
+    }
+  }
+}
