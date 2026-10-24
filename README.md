@@ -72,7 +72,13 @@ An early-warning system for US bank failures, built from public call reports for
 
 The rule ended the search before the trajectory-extension, funding and regional-retry rounds, and those are untested.
 
-**Final exam, still to come:** [out/prospective/predictions_2026Q2.csv](out/prospective/predictions_2026Q2.csv) scores all 4,313 banks on their June 2026 reports (4.7 failures expected in 12 months). Its SHA-256 is recorded in `registration.json`. Score it after 2027-08-14 against the failures that actually happen.
+**Final exam, still to come:** `out/prospective/predictions_2026Q2.csv` scores all 4,313 banks on their June 2026 reports (4.7 failures expected in 12 months). Score it after 2027-08-14 against the failures that actually happen.
+
+**Withheld from this public repo:** two files that name banks still operating, with their failure scores:
+- `out/prospective/predictions_2026Q2.csv`;
+- `out/v4/p3.parquet`, the September 2025 scores behind the P3 result.
+
+This is a commit-reveal. The CSV's SHA-256 (`a1e38c24…`) is already public in [out/prospective/registration.json](out/prospective/registration.json), so the CSV can't be changed without detection. It will be published after 2027-08-14 together with its scoring. `register_prospective.py` and `evaluate_v4.py` regenerate both files from public data.
 
 ## Bugs found after the v3 results, and the v3.1 re-run
 1. **`efficiency` used the dollar numerator (EEFF)** instead of the ratio (EEFF/IEFF).

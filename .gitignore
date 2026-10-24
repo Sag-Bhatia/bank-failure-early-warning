@@ -2,3 +2,7 @@
 data/
 __pycache__/
 .pytest_cache/
+
+# named scores for live banks: withheld from the public repo (commit-reveal; hash in out/prospective/registration.json)
+out/prospective/predictions_2026Q2.csv
+out/v4/p3.parquet
