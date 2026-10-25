@@ -1,4 +1,4 @@
-"""Export what the web page needs: page/data.json (story charts) and page/banks.json (lookup, 2019-2024)."""
+"""Export what the web page needs: docs/data.json (story charts) and docs/banks.json (lookup, 2019-2024)."""
 import html
 import json
 import re
@@ -13,7 +13,7 @@ from features_v3 import DIMENSIONS
 from fetch import DATA
 from lenses import history
 
-PAGE = Path(__file__).parent / "page"
+PAGE = Path(__file__).parent / "docs"  # GitHub Pages serves /docs
 
 
 def deciles(df, lens, outcome, how):

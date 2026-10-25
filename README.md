@@ -2,7 +2,7 @@
 
 An early-warning system for US bank failures, built from public call reports for every US bank from 1985 to 2024. Each version was preregistered, frozen, and then tested once on data it had never seen. The results include the misses and the bugs.
 
-**Interactive write-up and bank lookup:** https://claude.ai/artifact/1MTpzK19okzunUqMfZhmqz (private until shared from its Share menu)
+**Interactive write-up and bank lookup:** https://sag-bhatia.github.io/bank-failure-early-warning/ (served from [`docs/`](docs/))
 
 ## The system
 

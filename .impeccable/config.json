@@ -7,7 +7,7 @@
         "rule": "low-contrast",
         "value": "*",
         "files": [
-          "page/index.html"
+          "docs/index.html"
         ],
         "createdAt": "2026-10-23T07:01:50.358Z",
         "reason": "Claude: hook compares dark-theme tokens against #ffffff; measured real contrast of every text token on its own theme surface is 5.27-9.54:1"

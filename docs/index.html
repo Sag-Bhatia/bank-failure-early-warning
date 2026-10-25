@@ -1,4 +1,7 @@
+<!doctype html>
+<html lang="en">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Two Ways Banks Fail</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -337,7 +340,7 @@ code { font-family: var(--font-data); font-size: .9em; }
 <script>
 const $ = (s, el = document) => el.querySelector(s);
 const NS = "http://www.w3.org/2000/svg";
-const ARTIFACT_URL = "https://claude.ai/artifact/1MTpzK19okzunUqMfZhmqz";
+const SHARE_URL = "https://sag-bhatia.github.io/bank-failure-early-warning/";  // public, unlike the claude.ai copy
 const FLAG = 95;
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -586,7 +589,7 @@ function bankView(b, opts = {}) {
   const fmtA = a => a >= 1e6 ? `$${(a / 1e6).toFixed(a >= 1e8 ? 0 : 1)}B` : `$${Math.round(a / 1e3)}M`;
   const memo = MEMOS[b.id];
   const v = verdict(b, lastIdx, ql[lastIdx]);
-  const link = `${ARTIFACT_URL}#bank-${b.id}`;
+  const link = `${SHARE_URL}#bank-${b.id}`;
   $("#bank").innerHTML = `
     <div class="bank-head"><h3>${esc(b.n)}</h3><span class="place">${esc(b.p)}</span>
       ${b.f ? `<span class="pill">Failed ${esc(b.f)}</span>` : `<span class="pill ok">No failure through 2025</span>`}</div>
